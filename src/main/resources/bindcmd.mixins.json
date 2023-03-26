@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "net.immortaldevs.bindcmd.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+  ],
+  "client": [
+    "ExampleMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

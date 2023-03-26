@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "id": "bind_cmd",
+  "version": "${version}",
+  "name": "BindCommands",
+  "description": "Easily bind Minecraft commands to keyboard keys.",
+  "authors": [
+    "kalucky0"
+  ],
+  "contact": {
+    "homepage": "https://immortaldevs.net/",
+    "sources": "https://github.com/devs-immortal/bind-cmd",
+    "issues": "https://github.com/devs-immortal/bind-cmd/issues"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.com/invite/wmMa47n"
+      },
+      "update_checker": false
+    }
+  },
+  "license": "MIT",
+  "icon": "assets/bindcmd/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "main": [
+      "net.immortaldevs.bindcmd.BindCmdModKt::init"
+    ]
+  },
+  "mixins": [
+    "bindcmd.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.8.7",
+    "fabric": "*",
+    "fabric-language-kotlin": "*",
+    "minecraft": "1.19.x",
+    "modmenu": "*"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}
