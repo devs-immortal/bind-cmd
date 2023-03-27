@@ -2,6 +2,8 @@ package net.immortaldevs.bindcmd.config
 
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
+import net.immortaldevs.bindcmd.CommandBinding
+import net.immortaldevs.bindcmd.bindings
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.screen.option.GameOptionsScreen
 import net.minecraft.client.gui.widget.ButtonWidget
@@ -19,9 +21,6 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
     Text.translatable("text.bindcmd.config.title")
 ) {
     var selectedKeyBinding: KeyBinding? = null
-    var bindings = mutableListOf(
-        KeyBinding("/help", 72, "key.categories.bindcmd")
-    )
     private var lastKeyCodeUpdateTime: Long = 0
     private var bindingsList: BindingsListWidget? = null
 
@@ -29,10 +28,11 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
         bindingsList = BindingsListWidget(this, client)
         addSelectableChild(bindingsList)
 
-        val addButton = ButtonWidget.builder(Text.translatable("text.bindcmd.config.add_command")) { _ -> addButtonPressed() }
-            .dimensions(width / 2 - 155, height - 29, 150, 20)
+        val addButton =
+            ButtonWidget.builder(Text.translatable("text.bindcmd.config.add_command")) { addButtonPressed() }
+                .dimensions(width / 2 - 155, height - 29, 150, 20)
 
-        val doneButton = ButtonWidget.builder(ScreenTexts.DONE) { _ -> doneButtonPressed() }
+        val doneButton = ButtonWidget.builder(ScreenTexts.DONE) { doneButtonPressed() }
             .dimensions(width / 2 - 155 + 160, height - 29, 150, 20)
 
         addDrawableChild(addButton.build()) as ButtonWidget
@@ -40,12 +40,15 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
         addDrawableChild(doneButton.build())
     }
 
+    override fun tick() {
+        bindingsList?.tick()
+    }
+
     override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
         return if (selectedKeyBinding != null) {
             bindings.forEach { binding ->
-                if (binding == selectedKeyBinding) {
+                if (binding.key == selectedKeyBinding)
                     binding.setBoundKey(InputUtil.Type.MOUSE.createFromCode(button))
-                }
             }
             selectedKeyBinding = null
             bindingsList?.update()
@@ -58,12 +61,8 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
     override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
         return if (selectedKeyBinding != null) {
             bindings.forEach { binding ->
-                if (binding == selectedKeyBinding) {
-                    if (keyCode == 256)
-                        binding.setBoundKey(InputUtil.UNKNOWN_KEY)
-                    else
-                        binding.setBoundKey(InputUtil.fromKeyCode(keyCode, scanCode))
-                }
+                if (binding.key == selectedKeyBinding)
+                    binding.setBoundKey(keyCode, scanCode)
             }
             selectedKeyBinding = null
             lastKeyCodeUpdateTime = Util.getMeasuringTimeMs()
@@ -86,9 +85,9 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
     }
 
     private fun addButtonPressed() {
-        val binding = KeyBinding("/", 256, "key.categories.bindcmd")
+        val binding = CommandBinding("/")
         bindings.add(binding)
-        bindingsList?.addBinding(binding, Text.of(binding.translationKey))
+        bindingsList?.addBinding(binding)
         bindingsList?.update()
     }
 }

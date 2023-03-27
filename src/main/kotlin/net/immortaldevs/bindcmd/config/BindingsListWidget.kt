@@ -3,6 +3,8 @@ package net.immortaldevs.bindcmd.config
 import com.google.common.collect.ImmutableList
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
+import net.immortaldevs.bindcmd.CommandBinding
+import net.immortaldevs.bindcmd.bindings
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.font.TextRenderer
 import net.minecraft.client.gui.Element
@@ -10,6 +12,7 @@ import net.minecraft.client.gui.Selectable
 import net.minecraft.client.gui.tooltip.Tooltip
 import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.client.gui.widget.ElementListWidget
+import net.minecraft.client.gui.widget.TextFieldWidget
 import net.minecraft.client.option.KeyBinding
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.text.Text
@@ -20,18 +23,16 @@ import java.util.function.Consumer
 class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) :
     ElementListWidget<BindingsListWidget.BindingEntry>(
         client,
-        parent.width + 45,
+        parent.width,
         parent.height,
-        20,
-        parent.height - 32,
+        22,
+        parent.height - 34,
         20
     ) {
 
-    var maxKeyNameLength = 150
-
     init {
-        for (binding in parent.bindings) {
-            addEntry(BindingEntry(binding, Text.of(binding.translationKey)))
+        for (binding in bindings) {
+            addEntry(BindingEntry(binding))
         }
     }
 
@@ -40,8 +41,8 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
         updateChildren()
     }
 
-    fun addBinding(binding: KeyBinding, bindingName: Text) {
-        addEntry(BindingEntry(binding, bindingName))
+    fun addBinding(binding: CommandBinding) {
+        addEntry(BindingEntry(binding))
     }
 
     private fun updateChildren() {
@@ -56,17 +57,42 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
         return super.getRowWidth() + 32
     }
 
+    fun tick() {
+        for (entry in children()) {
+            entry.tick()
+        }
+    }
+
     @Environment(EnvType.CLIENT)
-    inner class BindingEntry(private val binding: KeyBinding, private val bindingName: Text) : Entry<BindingEntry>() {
+    inner class BindingEntry(private val binding: CommandBinding) : Entry<BindingEntry>() {
         private var duplicate = false
-        private var editButton: ButtonWidget = ButtonWidget.builder(bindingName) { _ -> editButtonPressed() }
+        private var editButton: ButtonWidget = ButtonWidget.builder(Text.empty()) { editButtonPressed() }
             .dimensions(0, 0, 75, 20).build()
         private var deleteButton: ButtonWidget =
-            ButtonWidget.builder(Text.translatable("text.bindcmd.config.remove")) { _ -> deleteButtonPressed() }
-            .dimensions(0, 0, 50, 20).build()
+            ButtonWidget.builder(Text.translatable("text.bindcmd.config.remove")) { deleteButtonPressed() }
+                .dimensions(0, 0, 50, 20).build()
+        private var inputField: TextFieldWidget = TextFieldWidget(
+            MinecraftClient.getInstance().textRenderer,
+            0,
+            0,
+            85,
+            16,
+            Text.of(binding.key.translationKey)
+        )
 
         init {
+            inputField.setChangedListener { text -> inputFieldChanged(text) }
+            inputField.setMaxLength(256)
+            inputField.text = binding.command
             update()
+        }
+
+        private fun inputFieldChanged(text: String) {
+            binding.command = text
+        }
+
+        fun tick() {
+            inputField.tick()
         }
 
         override fun render(
@@ -82,17 +108,23 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
             tickDelta: Float
         ) {
             val textRenderer: TextRenderer = this@BindingsListWidget.client.textRenderer
-            val maxKeyNameLength: Float = (x + 90 - this@BindingsListWidget.maxKeyNameLength).toFloat()
             val yPosition = y + entryHeight / 2
 
-            textRenderer.draw(matrices, bindingName, maxKeyNameLength, (yPosition - 9 / 2).toFloat(), 16777215)
+            if (mouseX > x && mouseX < x + 75 && mouseY > yPosition - 9 / 2 && mouseY < yPosition + 9 / 2) {
+                inputField.x = x - 4
+                inputField.y = y + 1
+                inputField.render(matrices, mouseX, mouseY, tickDelta)
+            } else {
+                textRenderer.draw(matrices, binding.command, x.toFloat(), (yPosition - 6 / 2).toFloat(), 16777215)
+            }
 
             deleteButton.x = x + 190
             deleteButton.y = y
             deleteButton.render(matrices, mouseX, mouseY, tickDelta)
 
-            editButton.x = x + 105
+            editButton.x = x + 110
             editButton.y = y
+
             if (duplicate) {
                 val j = editButton.x - 6
                 fill(matrices, j, y + 2, j + 3, y + entryHeight + 2, Formatting.RED.colorValue ?: -16777216)
@@ -102,21 +134,21 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
         }
 
         override fun children(): List<Element?>? {
-            return ImmutableList.of(editButton, deleteButton)
+            return ImmutableList.of(editButton, deleteButton, inputField)
         }
 
         override fun selectableChildren(): List<Selectable?>? {
-            return ImmutableList.of(editButton, deleteButton)
+            return ImmutableList.of(editButton, deleteButton, inputField)
         }
 
         fun update() {
-            editButton.message = binding.boundKeyLocalizedText
+            editButton.message = binding.key.boundKeyLocalizedText
             duplicate = false
 
             val mutableText = Text.empty()
-            if (!binding.isUnbound) {
+            if (!binding.key.isUnbound) {
                 var allKeys: Array<KeyBinding> = this@BindingsListWidget.client.options.allKeys;
-                allKeys = allKeys.filter { it != binding && binding.equals(it) }.toTypedArray()
+                allKeys = allKeys.filter { it != binding.key && binding.key.equals(it) }.toTypedArray()
                 for (keyBinding in allKeys) {
                     if (duplicate)
                         mutableText.append(", ")
@@ -134,20 +166,20 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
                 editButton.setTooltip(null as Tooltip?)
             }
 
-            if (this@BindingsListWidget.parent.selectedKeyBinding === binding) {
+            if (this@BindingsListWidget.parent.selectedKeyBinding === binding.key) {
                 val key = editButton.message.copy().formatted(*arrayOf(Formatting.WHITE, Formatting.UNDERLINE));
                 editButton.message = Text.literal("> ").append(key).append(" <").formatted(Formatting.YELLOW)
             }
         }
 
         private fun editButtonPressed() {
-            this@BindingsListWidget.parent.selectedKeyBinding = binding
+            this@BindingsListWidget.parent.selectedKeyBinding = binding.key
             this@BindingsListWidget.update()
         }
 
         private fun deleteButtonPressed() {
             val list = this@BindingsListWidget
-            list.parent.bindings.remove(binding)
+            bindings.remove(binding)
             list.parent.selectedKeyBinding = null
             list.removeEntry(this)
             list.update()
