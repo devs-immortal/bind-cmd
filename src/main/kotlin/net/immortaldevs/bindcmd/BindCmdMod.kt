@@ -1,5 +1,7 @@
 package net.immortaldevs.bindcmd
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
+import net.minecraft.client.MinecraftClient
 import net.minecraft.client.option.KeyBinding
 import net.minecraft.client.util.InputUtil
 
@@ -9,7 +11,16 @@ var bindings = mutableListOf(
 
 @Suppress("unused")
 fun init() {
-    println("Hello Fabric world!")
+    ClientTickEvents.END_CLIENT_TICK.register(ClientTickEvents.EndTick { client -> onEndClientTick(client) })
+}
+
+fun onEndClientTick(client: MinecraftClient) {
+    bindings.forEach { binding ->
+        if (binding.key.wasPressed()) {
+            val command = binding.command.substring(1)
+            client.networkHandler?.sendChatCommand(command)
+        }
+    }
 }
 
 class CommandBinding(var command: String, val key: KeyBinding) {
