@@ -11,6 +11,10 @@ archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
+repositories {
+    maven { url "https://maven.terraformersmc.com/" }
+}
+
 dependencies {
     //to change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -21,6 +25,10 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     modImplementation "net.fabricmc:fabric-language-kotlin:${project.fabric_kotlin_version}"
+
+    modImplementation ("com.terraformersmc:modmenu:${project.modmenu_version}") {
+        exclude module: "fabric-api"
+    }
 }
 
 processResources {

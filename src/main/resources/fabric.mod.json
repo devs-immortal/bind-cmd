@@ -24,8 +24,11 @@
   "icon": "assets/bindcmd/icon.png",
   "environment": "client",
   "entrypoints": {
-    "main": [
+    "client": [
       "net.immortaldevs.bindcmd.BindCmdModKt::init"
+    ],
+    "modmenu": [
+      "net.immortaldevs.bindcmd.config.ModMenuIntegration"
     ]
   },
   "mixins": [
