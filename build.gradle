@@ -32,6 +32,10 @@ dependencies {
     }
 
     implementation "com.charleskorn.kaml:kaml:0.53.0"
+
+    include "com.charleskorn.kaml:kaml:0.53.0"
+    include "com.charleskorn.kaml:kaml-jvm:0.53.0"
+    include "org.snakeyaml:snakeyaml-engine:2.6"
 }
 
 processResources {
