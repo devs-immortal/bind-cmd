@@ -31,9 +31,7 @@
       "net.immortaldevs.bindcmd.config.ModMenuIntegration"
     ]
   },
-  "mixins": [
-    "bindcmd.mixins.json"
-  ],
+  "mixins": [],
   "depends": {
     "fabricloader": ">=0.8.7",
     "fabric": "*",
