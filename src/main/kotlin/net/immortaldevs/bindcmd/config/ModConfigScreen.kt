@@ -3,12 +3,10 @@ package net.immortaldevs.bindcmd.config
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.immortaldevs.bindcmd.CommandBinding
-import net.immortaldevs.bindcmd.bindings
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.screen.option.GameOptionsScreen
 import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.client.option.KeyBinding
-import net.minecraft.client.util.InputUtil
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.screen.ScreenTexts
 import net.minecraft.text.Text
@@ -46,9 +44,9 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
 
     override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
         return if (selectedKeyBinding != null) {
-            bindings.forEach { binding ->
+            Config.bindings.forEach { binding ->
                 if (binding.key == selectedKeyBinding)
-                    binding.setBoundKey(InputUtil.Type.MOUSE.createFromCode(button))
+                    binding.setBoundMouse(button)
             }
             selectedKeyBinding = null
             bindingsList?.update()
@@ -60,7 +58,7 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
 
     override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
         return if (selectedKeyBinding != null) {
-            bindings.forEach { binding ->
+            Config.bindings.forEach { binding ->
                 if (binding.key == selectedKeyBinding)
                     binding.setBoundKey(keyCode, scanCode)
             }
@@ -81,12 +79,13 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
     }
 
     private fun doneButtonPressed() {
+        Config.save()
         client?.setScreen(parent)
     }
 
     private fun addButtonPressed() {
         val binding = CommandBinding("/")
-        bindings.add(binding)
+        Config.bindings.add(binding)
         bindingsList?.addBinding(binding)
         bindingsList?.update()
     }

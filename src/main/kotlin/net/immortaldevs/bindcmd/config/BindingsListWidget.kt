@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.immortaldevs.bindcmd.CommandBinding
-import net.immortaldevs.bindcmd.bindings
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.font.TextRenderer
 import net.minecraft.client.gui.Element
@@ -31,9 +30,7 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
     ) {
 
     init {
-        for (binding in bindings) {
-            addEntry(BindingEntry(binding))
-        }
+        Config.bindings.forEach { binding -> addEntry(BindingEntry(binding)) }
     }
 
     fun update() {
@@ -179,7 +176,7 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
 
         private fun deleteButtonPressed() {
             val list = this@BindingsListWidget
-            bindings.remove(binding)
+            Config.bindings.remove(binding)
             list.parent.selectedKeyBinding = null
             list.removeEntry(this)
             list.update()
