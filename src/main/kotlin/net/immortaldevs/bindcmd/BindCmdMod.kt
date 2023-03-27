@@ -12,7 +12,7 @@ fun init() {
 
 fun onEndClientTick(client: MinecraftClient) {
     Config.bindings.forEach { binding ->
-        if (binding.key.wasPressed()) {
+        if (!binding.isUnknown && binding.key.wasPressed()) {
             val command = binding.command.substring(1)
             client.networkHandler?.sendChatCommand(command)
         }

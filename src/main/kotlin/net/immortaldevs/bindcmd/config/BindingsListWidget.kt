@@ -55,13 +55,12 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
     }
 
     fun tick() {
-        for (entry in children()) {
-            entry.tick()
-        }
+        children().forEach { entry -> entry.tick() }
     }
 
     @Environment(EnvType.CLIENT)
     inner class BindingEntry(private val binding: CommandBinding) : Entry<BindingEntry>() {
+        private var hovered = false
         private var duplicate = false
         private var editButton: ButtonWidget = ButtonWidget.builder(Text.empty()) { editButtonPressed() }
             .dimensions(0, 0, 75, 20).build()
@@ -85,11 +84,16 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
         }
 
         private fun inputFieldChanged(text: String) {
-            binding.command = text
+            if (text.startsWith("/")) {
+                binding.command = text
+            } else {
+                inputField.text = "/$text"
+                binding.command = "/$text"
+            }
         }
 
         fun tick() {
-            inputField.tick()
+            if (hovered) inputField.tick()
         }
 
         override fun render(
@@ -105,22 +109,29 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
             tickDelta: Float
         ) {
             val textRenderer: TextRenderer = this@BindingsListWidget.client.textRenderer
-            val yPosition = y + entryHeight / 2
 
-            if (mouseX > x && mouseX < x + 75 && mouseY > yPosition - 9 / 2 && mouseY < yPosition + 9 / 2) {
+            if (mouseX > x - 5 && mouseX < x + 84 && mouseY > y && mouseY < y + 20) {
                 inputField.x = x - 4
                 inputField.y = y + 1
                 inputField.render(matrices, mouseX, mouseY, tickDelta)
+                if (!this.hovered && inputField.isFocused) {
+                    inputField.isFocused = false
+                    inputField.setCursorToStart()
+                }
+                this.hovered = true
             } else {
-                textRenderer.draw(matrices, binding.command, x.toFloat(), (yPosition - 6 / 2).toFloat(), 16777215)
+                val yPosition = y + entryHeight / 2 - 3
+                val text = if (binding.command.length > 40) binding.command.substring(0, 40) + "…" else binding.command
+                textRenderer.draw(matrices, text, x.toFloat(), yPosition.toFloat(), 16777215)
+                this.hovered = false
             }
 
-            deleteButton.x = x + 190
+            editButton.x = x + entryWidth - editButton.width - deleteButton.width - 2
+            editButton.y = y
+
+            deleteButton.x = x + entryWidth - deleteButton.width
             deleteButton.y = y
             deleteButton.render(matrices, mouseX, mouseY, tickDelta)
-
-            editButton.x = x + 110
-            editButton.y = y
 
             if (duplicate) {
                 val j = editButton.x - 6

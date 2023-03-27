@@ -19,6 +19,8 @@ class CommandBinding(var command: String, var key: KeyBinding) {
         setBoundKey(key, 0)
     }
 
+    val isUnknown: Boolean get() = key.translationKey.endsWith("unknown")
+
     fun setBoundKey(keyCode: Int, scanCode: Int) {
         val key = InputUtil.fromKeyCode(if (keyCode == 256) -1 else keyCode, scanCode)
         this.key = KeyBinding(key.translationKey, key.code, "key.categories.bindcmd")
