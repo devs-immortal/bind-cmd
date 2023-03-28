@@ -84,12 +84,7 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
         }
 
         private fun inputFieldChanged(text: String) {
-            if (text.startsWith("/")) {
-                binding.command = text
-            } else {
-                inputField.text = "/$text"
-                binding.command = "/$text"
-            }
+            binding.command = text
         }
 
         fun tick() {

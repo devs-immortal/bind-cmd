@@ -13,8 +13,12 @@ fun init() {
 fun onEndClientTick(client: MinecraftClient) {
     Config.bindings.forEach { binding ->
         if (!binding.isUnknown && binding.key.wasPressed()) {
-            val command = binding.command.substring(1)
-            client.networkHandler?.sendChatCommand(command)
+            if (binding.command[0] != '/') {
+                client.networkHandler?.sendChatMessage(binding.command)
+            } else {
+                val command = binding.command.substring(1)
+                client.networkHandler?.sendChatCommand(command)
+            }
         }
     }
 }
