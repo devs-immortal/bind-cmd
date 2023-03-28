@@ -19,14 +19,26 @@ class Config {
                 save()
                 return
             }
-            val inputStream = file.inputStream()
-            bindings = decode(inputStream.readBytes().decodeToString()).toMutableList()
+            try {
+                val inputStream = file.inputStream()
+                bindings = decode(inputStream.readBytes().decodeToString()).toMutableList()
+            } catch (e: Exception) {
+                createBackup()
+                save()
+            }
         }
 
         @JvmStatic
         fun save() {
             val file = MinecraftClient.getInstance().runDirectory.resolve("config/bind_cmd.ini")
             file.writeText(encode(bindings))
+        }
+
+        @JvmStatic
+        private fun createBackup() {
+            val file = MinecraftClient.getInstance().runDirectory.resolve("config/bind_cmd.ini")
+            val backupFile = MinecraftClient.getInstance().runDirectory.resolve("config/bind_cmd.ini.bak")
+            file.copyTo(backupFile, true)
         }
 
         @JvmStatic
