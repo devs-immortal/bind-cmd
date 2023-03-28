@@ -1,7 +1,5 @@
 package net.immortaldevs.bindcmd.config
 
-import com.charleskorn.kaml.Yaml
-import kotlinx.serialization.Serializable
 import net.immortaldevs.bindcmd.CommandBinding
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.util.InputUtil
@@ -15,38 +13,38 @@ class Config {
 
         @JvmStatic
         fun load() {
-            val file = MinecraftClient.getInstance().runDirectory.resolve("config/bind_cmd.yaml")
+            val file = MinecraftClient.getInstance().runDirectory.resolve("config/bind_cmd.ini")
             if (!file.exists()) {
                 file.createNewFile()
                 save()
                 return
             }
             val inputStream = file.inputStream()
-            val result = Yaml.default.decodeFromString(Bindings.serializer(), inputStream.bufferedReader().readText())
-            bindings = result.bindings.map { binding ->
-                CommandBinding(binding.command, binding.key)
-            }.toMutableList()
+            bindings = decode(inputStream.readBytes().decodeToString()).toMutableList()
         }
 
         @JvmStatic
         fun save() {
-            val input = bindings.map { binding ->
-                Binding(binding.command, binding.key.translationKey)
+            val file = MinecraftClient.getInstance().runDirectory.resolve("config/bind_cmd.ini")
+            file.writeText(encode(bindings))
+        }
+
+        @JvmStatic
+        private fun encode(data: List<CommandBinding>): String {
+            return data.joinToString("\n") { binding ->
+                "${binding.key.translationKey}=\"${binding.command}\""
             }
-            val result = Yaml.default.encodeToString(Bindings.serializer(), Bindings(input))
-            val file = MinecraftClient.getInstance().runDirectory.resolve("config/bind_cmd.yaml")
-            file.writeText(result)
+        }
+
+        @JvmStatic
+        private fun decode(input: String): List<CommandBinding> {
+            val lines = input.split("\n").filter { it.isNotEmpty() }
+            return lines.map { line ->
+                val parts = line.split("=\"")
+                val translationKey = parts[0]
+                val command = parts[1].substring(0, parts[1].length - 1)
+                CommandBinding(command, translationKey)
+            }
         }
     }
-
-    @Serializable
-    data class Binding(
-        val command: String,
-        val key: String,
-    )
-
-    @Serializable
-    data class Bindings(
-        val bindings: List<Binding>,
-    )
 }

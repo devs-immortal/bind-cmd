@@ -30,12 +30,6 @@ dependencies {
     modImplementation ("com.terraformersmc:modmenu:${project.modmenu_version}") {
         exclude module: "fabric-api"
     }
-
-    implementation "com.charleskorn.kaml:kaml:0.53.0"
-
-    include "com.charleskorn.kaml:kaml:0.53.0"
-    include "com.charleskorn.kaml:kaml-jvm:0.53.0"
-    include "org.snakeyaml:snakeyaml-engine:2.6"
 }
 
 processResources {
