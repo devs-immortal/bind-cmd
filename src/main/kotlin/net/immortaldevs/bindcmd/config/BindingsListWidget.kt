@@ -8,13 +8,14 @@ import net.minecraft.client.MinecraftClient
 import net.minecraft.client.font.TextRenderer
 import net.minecraft.client.gui.Element
 import net.minecraft.client.gui.Selectable
-import net.minecraft.client.gui.tooltip.Tooltip
 import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.client.gui.widget.ElementListWidget
 import net.minecraft.client.gui.widget.TextFieldWidget
 import net.minecraft.client.option.KeyBinding
 import net.minecraft.client.util.math.MatrixStack
+import net.minecraft.text.LiteralText
 import net.minecraft.text.Text
+import net.minecraft.text.TranslatableText
 import net.minecraft.util.Formatting
 import java.util.*
 import java.util.function.Consumer
@@ -62,11 +63,8 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
     inner class BindingEntry(private val binding: CommandBinding) : Entry<BindingEntry>() {
         private var hovered = false
         private var duplicate = false
-        private var editButton: ButtonWidget = ButtonWidget.builder(Text.empty()) { editButtonPressed() }
-            .dimensions(0, 0, 75, 20).build()
-        private var deleteButton: ButtonWidget =
-            ButtonWidget.builder(Text.translatable("text.bindcmd.config.remove")) { deleteButtonPressed() }
-                .dimensions(0, 0, 50, 20).build()
+        private var editButton: ButtonWidget = ButtonWidget(0, 0, 75, 20, Text.of("")) { editButtonPressed() }
+        private var deleteButton: ButtonWidget = ButtonWidget(0, 0, 50, 20, TranslatableText("text.bindcmd.config.remove")) { deleteButtonPressed() }
         private var inputField: TextFieldWidget = TextFieldWidget(
             MinecraftClient.getInstance().textRenderer,
             0,
@@ -112,7 +110,6 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
                 inputField.width = textWidth
                 inputField.render(matrices, mouseX, mouseY, tickDelta)
                 if (!this.hovered && inputField.isFocused) {
-                    inputField.isFocused = false
                     inputField.setCursorToStart()
                 }
                 this.hovered = true
@@ -150,30 +147,22 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
             editButton.message = binding.key.boundKeyLocalizedText
             duplicate = false
 
-            val mutableText = Text.empty()
             if (!binding.key.isUnbound) {
                 var allKeys: Array<KeyBinding> = this@BindingsListWidget.client.options.allKeys;
                 allKeys = allKeys.filter { it != binding.key && binding.key.equals(it) }.toTypedArray()
                 for (keyBinding in allKeys) {
-                    if (duplicate)
-                        mutableText.append(", ")
                     duplicate = true
-                    mutableText.append(Text.translatable(keyBinding.translationKey))
                 }
             }
 
             if (duplicate) {
                 val key = editButton.message.copy().formatted(Formatting.WHITE)
-                val tooltip = Text.translatable("controls.keybinds.duplicateKeybinds", *arrayOf<Any>(mutableText))
-                editButton.message = Text.literal("[ ").append(key).append(" ]").formatted(Formatting.RED)
-                editButton.setTooltip(Tooltip.of(tooltip))
-            } else {
-                editButton.setTooltip(null as Tooltip?)
+                editButton.message = LiteralText("[ ").append(key).append(" ]").formatted(Formatting.RED)
             }
 
             if (this@BindingsListWidget.parent.selectedKeyBinding === binding.key) {
                 val key = editButton.message.copy().formatted(*arrayOf(Formatting.WHITE, Formatting.UNDERLINE));
-                editButton.message = Text.literal("> ").append(key).append(" <").formatted(Formatting.YELLOW)
+                editButton.message = LiteralText("> ").append(key).append(" <").formatted(Formatting.YELLOW)
             }
         }
 

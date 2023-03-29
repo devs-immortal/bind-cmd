@@ -22,12 +22,7 @@ private fun handleBinding(client: MinecraftClient, binding: CommandBinding) {
     if (binding.isUnknown) return
 
     if (binding.isPressed && !binding.wasPressed) {
-        if (binding.command[0] != '/') {
-            client.networkHandler?.sendChatMessage(binding.command)
-        } else {
-            val command = binding.command.substring(1)
-            client.networkHandler?.sendChatCommand(command)
-        }
+        client.player?.sendChatMessage(binding.command)
         lastKeyPress = System.currentTimeMillis()
         binding.wasPressed = true
     }
