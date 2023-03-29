@@ -4,6 +4,9 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.immortaldevs.bindcmd.config.Config
 import net.minecraft.client.MinecraftClient
 
+private var lastKeyPress: Long = 0
+private const val COOLDOWN: Long = 200
+
 @Suppress("unused")
 fun init() {
     Config.load()
@@ -11,6 +14,7 @@ fun init() {
 }
 
 private fun onEndClientTick(client: MinecraftClient) {
+    if (System.currentTimeMillis() - lastKeyPress < COOLDOWN) return
     Config.bindings.forEach { binding -> handleBinding(client, binding) }
 }
 
@@ -24,6 +28,7 @@ private fun handleBinding(client: MinecraftClient, binding: CommandBinding) {
             val command = binding.command.substring(1)
             client.networkHandler?.sendChatCommand(command)
         }
+        lastKeyPress = System.currentTimeMillis()
         binding.wasPressed = true
     }
 
