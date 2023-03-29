@@ -10,15 +10,24 @@ fun init() {
     ClientTickEvents.END_CLIENT_TICK.register(ClientTickEvents.EndTick { client -> onEndClientTick(client) })
 }
 
-fun onEndClientTick(client: MinecraftClient) {
-    Config.bindings.forEach { binding ->
-        if (!binding.isUnknown && binding.key.wasPressed()) {
-            if (binding.command[0] != '/') {
-                client.networkHandler?.sendChatMessage(binding.command)
-            } else {
-                val command = binding.command.substring(1)
-                client.networkHandler?.sendChatCommand(command)
-            }
+private fun onEndClientTick(client: MinecraftClient) {
+    Config.bindings.forEach { binding -> handleBinding(client, binding) }
+}
+
+private fun handleBinding(client: MinecraftClient, binding: CommandBinding) {
+    if (binding.isUnknown) return
+
+    if (binding.isPressed && !binding.wasPressed) {
+        if (binding.command[0] != '/') {
+            client.networkHandler?.sendChatMessage(binding.command)
+        } else {
+            val command = binding.command.substring(1)
+            client.networkHandler?.sendChatCommand(command)
         }
+        binding.wasPressed = true
+    }
+
+    if (!binding.isPressed && binding.wasPressed) {
+        binding.wasPressed = false
     }
 }
