@@ -71,7 +71,7 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
             MinecraftClient.getInstance().textRenderer,
             0,
             0,
-            85,
+            124,
             16,
             Text.of(binding.key.translationKey)
         )
@@ -104,10 +104,12 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
             tickDelta: Float
         ) {
             val textRenderer: TextRenderer = this@BindingsListWidget.client.textRenderer
+            val textWidth: Int = entryWidth - editButton.width - deleteButton.width - 3
 
-            if (mouseX > x - 5 && mouseX < x + 84 && mouseY > y && mouseY < y + 20) {
+            if (mouseX > x - 5 && mouseX < x + 123 && mouseY > y && mouseY < y + 20) {
                 inputField.x = x - 4
-                inputField.y = y + 1
+                inputField.y = y + 2
+                inputField.width = textWidth
                 inputField.render(matrices, mouseX, mouseY, tickDelta)
                 if (!this.hovered && inputField.isFocused) {
                     inputField.isFocused = false
@@ -115,8 +117,8 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
                 }
                 this.hovered = true
             } else {
-                val yPosition = y + entryHeight / 2 - 3
-                val text = if (binding.command.length > 40) binding.command.substring(0, 40) + "…" else binding.command
+                val yPosition = y + entryHeight / 2 - 2
+                val text = cutString(binding.command, textRenderer, textWidth - 12)
                 textRenderer.draw(matrices, text, x.toFloat(), yPosition.toFloat(), 16777215)
                 this.hovered = false
             }
@@ -186,6 +188,17 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
             list.parent.selectedKeyBinding = null
             list.removeEntry(this)
             list.update()
+        }
+
+        private fun cutString(text: String, textRenderer: TextRenderer, maxWidth: Int): String {
+            var width = textRenderer.getWidth(text)
+            if (width <= maxWidth) return text
+            var len = text.length
+            while (width > maxWidth && len > 0) {
+                len--
+                width = textRenderer.getWidth(text.substring(0, len))
+            }
+            return text.substring(0, len) + "…"
         }
     }
 }
