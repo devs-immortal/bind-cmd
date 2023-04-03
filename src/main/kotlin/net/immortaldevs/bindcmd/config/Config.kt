@@ -2,13 +2,12 @@ package net.immortaldevs.bindcmd.config
 
 import net.immortaldevs.bindcmd.CommandBinding
 import net.minecraft.client.MinecraftClient
-import net.minecraft.client.util.InputUtil
 
 class Config {
     companion object {
         @JvmStatic
         var bindings = mutableListOf(
-            CommandBinding("/help", InputUtil.GLFW_KEY_H),
+            CommandBinding("/help", 72),
         )
 
         @JvmStatic

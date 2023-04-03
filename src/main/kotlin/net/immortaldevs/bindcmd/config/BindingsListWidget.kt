@@ -7,7 +7,6 @@ import net.immortaldevs.bindcmd.CommandBinding
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.font.TextRenderer
 import net.minecraft.client.gui.Element
-import net.minecraft.client.gui.Selectable
 import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.client.gui.widget.ElementListWidget
 import net.minecraft.client.gui.widget.TextFieldWidget
@@ -136,10 +135,6 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
         }
 
         override fun children(): List<Element?>? {
-            return ImmutableList.of(editButton, deleteButton, inputField)
-        }
-
-        override fun selectableChildren(): List<Selectable?>? {
             return ImmutableList.of(editButton, deleteButton, inputField)
         }
 
