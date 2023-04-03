@@ -148,7 +148,7 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
             duplicate = false
 
             if (!binding.key.isUnbound) {
-                var allKeys: Array<KeyBinding> = this@BindingsListWidget.client.options.allKeys;
+                var allKeys: Array<KeyBinding> = this@BindingsListWidget.client.options.keysAll
                 allKeys = allKeys.filter { it != binding.key && binding.key.equals(it) }.toTypedArray()
                 for (keyBinding in allKeys) {
                     duplicate = true
