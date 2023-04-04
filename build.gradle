@@ -2,7 +2,6 @@ plugins {
     id 'fabric-loom'
     id 'maven-publish'
     id 'org.jetbrains.kotlin.jvm'
-    id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.10'
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
