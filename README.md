@@ -1,6 +1,6 @@
 # BindCommands
 
-![Code license (GNU GPL 3.0)](https://img.shields.io/github/license/devs-immortal/bind-cmd)
+![Code license (MIT)](https://img.shields.io/github/license/devs-immortal/bind-cmd)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/devs-immortal/bind-cmd)
 ![Minecraft 1.19.4](https://img.shields.io/badge/Minecraft-1.19.4-yellowgreen)
 
@@ -8,7 +8,7 @@ The BindCommands mod allows players to bind Minecraft commands to specific keys 
 
 ## Features
 
-- Bind Minecraft commands to specific keys on your keyboard.
+- Bind Minecraft commands or messages to specific keys on your keyboard.
 - Configure bindings using the mod settings located in the mod menu.
 - Easy to use and customize.
 
