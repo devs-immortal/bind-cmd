@@ -22,13 +22,11 @@ private fun handleBinding(client: MinecraftClient, binding: CommandBinding) {
     if (binding.isUnknown) return
 
     if (binding.isPressed && !binding.wasPressed) {
-        if (binding.command[0] == '/') {
-            val command = binding.command.substring(1)
-            client.networkHandler?.sendChatCommand(command)
-        } else if (binding.command[0] == '@') {
-            sendLastMessage(client)
-        } else {
-            client.networkHandler?.sendChatMessage(binding.command)
+        val cmd = Command(binding.command)
+        when (cmd.type) {
+            CmdType.COMMAND -> client.networkHandler?.sendChatCommand(cmd.command)
+            CmdType.MESSAGE -> client.networkHandler?.sendChatMessage(cmd.command)
+            CmdType.NONE -> return
         }
         lastKeyPress = System.currentTimeMillis()
         binding.wasPressed = true
@@ -36,17 +34,5 @@ private fun handleBinding(client: MinecraftClient, binding: CommandBinding) {
 
     if (!binding.isPressed && binding.wasPressed) {
         binding.wasPressed = false
-    }
-}
-
-private fun sendLastMessage(client: MinecraftClient) {
-    val msgHistory = client.inGameHud?.chatHud?.messageHistory ?: return
-    if (msgHistory.isEmpty()) return
-    val lastMsg = msgHistory.last()
-    if (lastMsg[0] == '/') {
-        val command = lastMsg.substring(1)
-        client.networkHandler?.sendChatCommand(command)
-    } else {
-        client.networkHandler?.sendChatMessage(lastMsg)
     }
 }
