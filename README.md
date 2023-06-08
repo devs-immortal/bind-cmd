@@ -2,9 +2,9 @@
 
 ![Code license (MIT)](https://img.shields.io/github/license/devs-immortal/bind-cmd)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/devs-immortal/bind-cmd)
-![Minecraft 1.19.4](https://img.shields.io/badge/Minecraft-1.19.4-yellowgreen)
+![Minecraft 1.20](https://img.shields.io/badge/Minecraft-1.20-yellowgreen)
 
-The BindCommands mod allows players to bind Minecraft commands to specific keys on their keyboard, making it easier and faster to execute commands in the game. The mod is built using the [Fabric](https://fabricmc.net/) mod loader and is compatible with Minecraft version 1.19.4.
+The BindCommands mod allows players to bind Minecraft commands to specific keys on their keyboard, making it easier and faster to execute commands in the game. The mod is built using the [Fabric](https://fabricmc.net/) mod loader and is compatible with Minecraft versions from 1.16.5 up to 1.20.
 
 ## Features
 
@@ -14,7 +14,7 @@ The BindCommands mod allows players to bind Minecraft commands to specific keys 
 
 ## Installation
 
-1. Download and install [Fabric](https://fabricmc.net/use/installer/) for Minecraft 1.19.4.
+1. Download and install [Fabric](https://fabricmc.net/use/installer/) for Minecraft 1.20.
 2. Download BindCommands, [Mod Menu](https://github.com/TerraformersMC/ModMenu), and [Fabric Language Kotlin](https://github.com/FabricMC/fabric-language-kotlin) mods.
 3. Place the downloaded mod files in the "mods" folder located in your Minecraft game directory.
 4. Launch Minecraft with the Fabric mod loader and enjoy the mod!
@@ -25,7 +25,7 @@ To use the BindCommands mod, follow these steps:
 
 1. Open the mod settings from the mod menu.
 2. Add a new binding by clicking the "Add Command" button.
-3. Enter the Minecraft command you want to execute.
+3. Enter the Minecraft command you want to execute or the message you want to send.
 4. Choose a key to bind the command to.
 5. Save the binding.
 6. Press the bound key to execute the command.
