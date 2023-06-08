@@ -3,6 +3,7 @@ package net.immortaldevs.bindcmd.config
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.immortaldevs.bindcmd.CommandBinding
+import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.screen.option.GameOptionsScreen
 import net.minecraft.client.gui.widget.ButtonWidget
@@ -71,11 +72,11 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
         }
     }
 
-    override fun render(matrices: MatrixStack?, mouseX: Int, mouseY: Int, delta: Float) {
-        renderBackground(matrices)
-        bindingsList?.render(matrices, mouseX, mouseY, delta)
-        drawCenteredTextWithShadow(matrices, textRenderer, title, width / 2, 8, 16777215)
-        super.render(matrices, mouseX, mouseY, delta)
+    override fun render(context: DrawContext?, mouseX: Int, mouseY: Int, delta: Float) {
+        renderBackground(context)
+        bindingsList?.render(context, mouseX, mouseY, delta)
+        context?.drawCenteredTextWithShadow(textRenderer, title, width / 2, 8, 16777215)
+        super.render(context, mouseX, mouseY, delta)
     }
 
     private fun doneButtonPressed() {

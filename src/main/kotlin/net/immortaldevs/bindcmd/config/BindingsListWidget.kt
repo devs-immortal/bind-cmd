@@ -6,6 +6,7 @@ import net.fabricmc.api.Environment
 import net.immortaldevs.bindcmd.CommandBinding
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.font.TextRenderer
+import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.Element
 import net.minecraft.client.gui.Selectable
 import net.minecraft.client.gui.tooltip.Tooltip
@@ -13,7 +14,6 @@ import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.client.gui.widget.ElementListWidget
 import net.minecraft.client.gui.widget.TextFieldWidget
 import net.minecraft.client.option.KeyBinding
-import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.text.Text
 import net.minecraft.util.Formatting
 import java.util.*
@@ -92,7 +92,7 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
         }
 
         override fun render(
-            matrices: MatrixStack?,
+            context: DrawContext?,
             index: Int,
             y: Int,
             x: Int,
@@ -110,7 +110,7 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
                 inputField.x = x - 4
                 inputField.y = y + 2
                 inputField.width = textWidth
-                inputField.render(matrices, mouseX, mouseY, tickDelta)
+                inputField.render(context, mouseX, mouseY, tickDelta)
                 if (!this.hovered && inputField.isFocused) {
                     inputField.isFocused = false
                     inputField.setCursorToStart()
@@ -119,7 +119,7 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
             } else {
                 val yPosition = y + entryHeight / 2 - 2
                 val text = cutString(binding.command, textRenderer, textWidth - 12)
-                textRenderer.draw(matrices, text, x.toFloat(), yPosition.toFloat(), 16777215)
+                context?.drawText(textRenderer, text, x, yPosition, 16777215, false)
                 this.hovered = false
             }
 
@@ -128,14 +128,14 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
 
             deleteButton.x = x + entryWidth - deleteButton.width
             deleteButton.y = y
-            deleteButton.render(matrices, mouseX, mouseY, tickDelta)
+            deleteButton.render(context, mouseX, mouseY, tickDelta)
 
             if (duplicate) {
                 val j = editButton.x - 6
-                fill(matrices, j, y + 2, j + 3, y + entryHeight + 2, Formatting.RED.colorValue ?: -16777216)
+                context?.fill(j, y + 2, j + 3, y + entryHeight + 2, -16777216)
             }
 
-            editButton.render(matrices, mouseX, mouseY, tickDelta)
+            editButton.render(context, mouseX, mouseY, tickDelta)
         }
 
         override fun children(): List<Element?>? {
@@ -166,9 +166,9 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
                 val key = editButton.message.copy().formatted(Formatting.WHITE)
                 val tooltip = Text.translatable("controls.keybinds.duplicateKeybinds", *arrayOf<Any>(mutableText))
                 editButton.message = Text.literal("[ ").append(key).append(" ]").formatted(Formatting.RED)
-                editButton.setTooltip(Tooltip.of(tooltip))
+                editButton.tooltip = Tooltip.of(tooltip)
             } else {
-                editButton.setTooltip(null as Tooltip?)
+                editButton.tooltip = null
             }
 
             if (this@BindingsListWidget.parent.selectedKeyBinding === binding.key) {
