@@ -8,7 +8,6 @@ import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.screen.option.GameOptionsScreen
 import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.client.option.KeyBinding
-import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.screen.ScreenTexts
 import net.minecraft.text.Text
 import net.minecraft.util.Util
@@ -34,13 +33,8 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
         val doneButton = ButtonWidget.builder(ScreenTexts.DONE) { doneButtonPressed() }
             .dimensions(width / 2 - 155 + 160, height - 29, 150, 20)
 
-        addDrawableChild(addButton.build()) as ButtonWidget
-
+        addDrawableChild(addButton.build())
         addDrawableChild(doneButton.build())
-    }
-
-    override fun tick() {
-        bindingsList?.tick()
     }
 
     override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
@@ -73,10 +67,13 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
     }
 
     override fun render(context: DrawContext?, mouseX: Int, mouseY: Int, delta: Float) {
-        renderBackground(context)
+        super.render(context, mouseX, mouseY, delta)
         bindingsList?.render(context, mouseX, mouseY, delta)
         context?.drawCenteredTextWithShadow(textRenderer, title, width / 2, 8, 16777215)
-        super.render(context, mouseX, mouseY, delta)
+    }
+
+    override fun renderBackground(context: DrawContext?, mouseX: Int, mouseY: Int, delta: Float) {
+        renderBackgroundTexture(context)
     }
 
     private fun doneButtonPressed() {

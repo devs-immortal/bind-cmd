@@ -16,7 +16,6 @@ import net.minecraft.client.gui.widget.TextFieldWidget
 import net.minecraft.client.option.KeyBinding
 import net.minecraft.text.Text
 import net.minecraft.util.Formatting
-import java.util.*
 import java.util.function.Consumer
 
 class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) :
@@ -54,10 +53,6 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
         return super.getRowWidth() + 32
     }
 
-    fun tick() {
-        children().forEach { entry -> entry.tick() }
-    }
-
     @Environment(EnvType.CLIENT)
     inner class BindingEntry(private val binding: CommandBinding) : Entry<BindingEntry>() {
         private var hovered = false
@@ -87,9 +82,6 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
             binding.command = text
         }
 
-        fun tick() {
-            if (hovered) inputField.tick()
-        }
 
         override fun render(
             context: DrawContext?,
@@ -113,7 +105,7 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
                 inputField.render(context, mouseX, mouseY, tickDelta)
                 if (!this.hovered && inputField.isFocused) {
                     inputField.isFocused = false
-                    inputField.setCursorToStart()
+                    inputField.setCursorToStart(false)
                 }
                 this.hovered = true
             } else {
