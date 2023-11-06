@@ -22,11 +22,14 @@ private fun handleBinding(client: MinecraftClient, binding: CommandBinding) {
     if (binding.isUnknown) return
 
     if (binding.isPressed && !binding.wasPressed) {
-        val cmd = Command(binding.command)
-        when (cmd.type) {
-            CmdType.COMMAND -> client.networkHandler?.sendChatCommand(cmd.command)
-            CmdType.MESSAGE -> client.networkHandler?.sendChatMessage(cmd.command)
-            CmdType.NONE -> return
+        val commands = Config.bindings.filter {it.key.translationKey == binding.key.translationKey }.map { it.command }
+        for (command in commands) {
+            val cmd = Command(command)
+            when (cmd.type) {
+                CmdType.COMMAND -> client.networkHandler?.sendChatCommand(cmd.command)
+                CmdType.MESSAGE -> client.networkHandler?.sendChatMessage(cmd.command)
+                CmdType.NONE -> return
+            }
         }
         lastKeyPress = System.currentTimeMillis()
         binding.wasPressed = true
