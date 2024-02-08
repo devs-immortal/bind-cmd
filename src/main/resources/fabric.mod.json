@@ -36,8 +36,8 @@
     "fabric": "*",
     "fabric-api": "*",
     "fabric-language-kotlin": "*",
-    "fabricloader": ">=0.14.19",
-    "minecraft": "1.20.x",
+    "fabricloader": ">=0.15.0",
+    "minecraft": ">=1.20.3 <1.20.5",
     "modmenu": "*"
   }
 }
