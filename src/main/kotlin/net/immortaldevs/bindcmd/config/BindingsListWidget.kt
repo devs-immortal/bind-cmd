@@ -22,9 +22,8 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
     ElementListWidget<BindingsListWidget.BindingEntry>(
         client,
         parent.width,
-        parent.height,
+        parent.height - 56,
         22,
-        parent.height - 34,
         20
     ) {
 
