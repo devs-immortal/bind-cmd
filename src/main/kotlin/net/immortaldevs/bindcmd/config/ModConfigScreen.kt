@@ -72,10 +72,6 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
         context?.drawCenteredTextWithShadow(textRenderer, title, width / 2, 8, 16777215)
     }
 
-    override fun renderBackground(context: DrawContext?, mouseX: Int, mouseY: Int, delta: Float) {
-        renderBackgroundTexture(context)
-    }
-
     private fun doneButtonPressed() {
         Config.save()
         client?.setScreen(parent)

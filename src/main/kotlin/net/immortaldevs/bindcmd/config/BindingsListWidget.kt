@@ -44,8 +44,8 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
         children().forEach(Consumer { obj: BindingEntry -> obj.update() })
     }
 
-    override fun getScrollbarPositionX(): Int {
-        return super.getScrollbarPositionX() + 15
+    override fun getScrollbarX(): Int {
+        return super.getScrollbarX() + 15
     }
 
     override fun getRowWidth(): Int {
