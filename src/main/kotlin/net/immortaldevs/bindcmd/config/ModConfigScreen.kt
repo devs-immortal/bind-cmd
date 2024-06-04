@@ -22,11 +22,13 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
     private var lastKeyCodeUpdateTime: Long = 0
     private var bindingsList: BindingsListWidget? = null
 
-    override fun init() {
+    override fun initBody() {
         bindingsList = this.layout.addBody(
-            this.addSelectableChild(BindingsListWidget(this, client))
+            BindingsListWidget(this, client)
         )
-        super.init()
+    }
+
+    override fun addOptions() {
     }
 
     override fun initFooter() {
