@@ -3,10 +3,10 @@ package net.immortaldevs.bindcmd.config
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.immortaldevs.bindcmd.CommandBinding
-import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.screen.option.GameOptionsScreen
 import net.minecraft.client.gui.widget.ButtonWidget
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget
 import net.minecraft.client.option.KeyBinding
 import net.minecraft.screen.ScreenTexts
 import net.minecraft.text.Text
@@ -23,18 +23,28 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
     private var bindingsList: BindingsListWidget? = null
 
     override fun init() {
-        bindingsList = BindingsListWidget(this, client)
-        addSelectableChild(bindingsList)
+        bindingsList = this.layout.addBody(
+            this.addSelectableChild(BindingsListWidget(this, client))
+        )
+        super.init()
+    }
 
-        val addButton =
-            ButtonWidget.builder(Text.translatable("text.bindcmd.config.add_command")) { addButtonPressed() }
-                .dimensions(width / 2 - 155, height - 29, 150, 20)
+    override fun initFooter() {
+        val addButton = ButtonWidget.builder(Text.translatable("text.bindcmd.config.add_command")) {
+            addButtonPressed()
+        }.build()
+        val doneButton = ButtonWidget.builder(ScreenTexts.DONE) { doneButtonPressed() }.build()
 
-        val doneButton = ButtonWidget.builder(ScreenTexts.DONE) { doneButtonPressed() }
-            .dimensions(width / 2 - 155 + 160, height - 29, 150, 20)
+        val directionalLayoutWidget = layout.addFooter(
+            DirectionalLayoutWidget.horizontal().spacing(8)
+        ) as DirectionalLayoutWidget
+        directionalLayoutWidget.add(addButton)
+        directionalLayoutWidget.add(doneButton)
+    }
 
-        addDrawableChild(addButton.build())
-        addDrawableChild(doneButton.build())
+    override fun initTabNavigation() {
+        layout.refreshPositions()
+        this.bindingsList?.position(this.width, this.layout)
     }
 
     override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
@@ -64,12 +74,6 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
         } else {
             super.keyPressed(keyCode, scanCode, modifiers)
         }
-    }
-
-    override fun render(context: DrawContext?, mouseX: Int, mouseY: Int, delta: Float) {
-        super.render(context, mouseX, mouseY, delta)
-        bindingsList?.render(context, mouseX, mouseY, delta)
-        context?.drawCenteredTextWithShadow(textRenderer, title, width / 2, 8, 16777215)
     }
 
     private fun doneButtonPressed() {

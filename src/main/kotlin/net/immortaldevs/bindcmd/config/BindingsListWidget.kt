@@ -22,8 +22,8 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
     ElementListWidget<BindingsListWidget.BindingEntry>(
         client,
         parent.width,
-        parent.height - 56,
-        22,
+        parent.layout.contentHeight,
+        parent.layout.headerHeight,
         20
     ) {
 
@@ -81,7 +81,6 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
             binding.command = text
         }
 
-
         override fun render(
             context: DrawContext?,
             index: Int,
@@ -123,7 +122,7 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
 
             if (duplicate) {
                 val j = editButton.x - 6
-                context?.fill(j, y + 2, j + 3, y + entryHeight + 2, -16777216)
+                context?.fill(j, y + 2, j + 3, y + entryHeight + 2, -65536)
             }
 
             editButton.render(context, mouseX, mouseY, tickDelta)
