@@ -5,8 +5,8 @@ plugins {
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.10'
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version
@@ -46,8 +46,8 @@ processResources {
 tasks.withType(JavaCompile) {
     it.options.encoding = "UTF-8"
 
-    // Minecraft 1.18.1 upwards uses Java 17.
-    it.options.release = 17
+    // Minecraft 1.17 upwards uses Java 16.
+    it.options.release = 8
 }
 
 java {
@@ -60,4 +60,4 @@ jar {
     }
 }
 
-compileKotlin.kotlinOptions.jvmTarget = "17"
+compileKotlin.kotlinOptions.jvmTarget = '1.8'
