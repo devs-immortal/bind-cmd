@@ -44,11 +44,6 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
         directionalLayoutWidget.add(doneButton)
     }
 
-    override fun initTabNavigation() {
-        layout.refreshPositions()
-        this.bindingsList?.position(this.width, this.layout)
-    }
-
     override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
         return if (selectedKeyBinding != null) {
             Config.bindings.forEach { binding ->
