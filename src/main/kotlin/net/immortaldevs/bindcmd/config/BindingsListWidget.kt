@@ -177,7 +177,7 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
             Config.bindings.remove(binding)
             list.parent.selectedKeyBinding = null
             list.removeEntry(this)
-            scrollAmount -= 20
+            scrollY -= 20
             list.update()
         }
 
