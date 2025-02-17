@@ -14,6 +14,7 @@ import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.client.gui.widget.ElementListWidget
 import net.minecraft.client.gui.widget.TextFieldWidget
 import net.minecraft.client.option.KeyBinding
+import net.minecraft.client.util.InputUtil
 import net.minecraft.text.Text
 import net.minecraft.util.Formatting
 import java.util.function.Consumer
@@ -173,10 +174,13 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
         }
 
         private fun deleteButtonPressed() {
-            val list = this@BindingsListWidget
+            binding.unbind()
             Config.bindings.remove(binding)
+
+            val list = this@BindingsListWidget
             list.parent.selectedKeyBinding = null
             list.removeEntry(this)
+
             scrollY -= 20
             list.update()
         }

@@ -24,12 +24,18 @@ class CommandBinding(var command: String, var key: KeyBinding) {
     var wasPressed: Boolean = false
 
     fun setBoundKey(keyCode: Int, scanCode: Int) {
+        unbind()
         val key = InputUtil.fromKeyCode(if (keyCode == 256) -1 else keyCode, scanCode)
         this.key = KeyBinding(key.translationKey, key.code, "key.categories.bindcmd")
     }
 
     fun setBoundMouse(button: Int) {
+        unbind()
         val key = InputUtil.Type.MOUSE.createFromCode(button)
         this.key = KeyBinding(key.translationKey, InputUtil.Type.MOUSE, key.code, "key.categories.bindcmd")
+    }
+
+    fun unbind() {
+        this.key.setBoundKey(InputUtil.UNKNOWN_KEY);
     }
 }
