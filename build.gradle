@@ -4,8 +4,8 @@ plugins {
     id 'org.jetbrains.kotlin.jvm'
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
+sourceCompatibility = JavaVersion.VERSION_21
+targetCompatibility = JavaVersion.VERSION_21
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version
@@ -44,9 +44,7 @@ processResources {
 // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
 tasks.withType(JavaCompile) {
     it.options.encoding = "UTF-8"
-
-    // Minecraft 1.18.1 upwards uses Java 17.
-    it.options.release = 17
+    it.options.release = 21
 }
 
 java {
@@ -54,9 +52,9 @@ java {
 }
 
 jar {
-    from ("LICENSE.md") {
-        rename { "${it}_${project.archivesBaseName}"}
+    from("LICENSE.md") {
+        rename { "${it}_${project.archivesBaseName}" }
     }
 }
 
-compileKotlin.kotlinOptions.jvmTarget = "17"
+compileKotlin.kotlinOptions.jvmTarget = "21"
