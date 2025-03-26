@@ -6,6 +6,9 @@ import net.minecraft.client.util.InputUtil
 
 class Config {
     companion object {
+        private const val CONFIG_DIR = "config"
+        private const val CONFIG_FILE = "$CONFIG_DIR/bind_cmd.ini"
+
         @JvmStatic
         var bindings = mutableListOf(
             CommandBinding("/help", InputUtil.GLFW_KEY_H),
@@ -13,7 +16,8 @@ class Config {
 
         @JvmStatic
         fun load() {
-            val file = MinecraftClient.getInstance().runDirectory.resolve("config/bind_cmd.ini")
+            ensureConfigDirExists()
+            val file = MinecraftClient.getInstance().runDirectory.resolve(CONFIG_FILE)
             if (!file.exists()) {
                 file.createNewFile()
                 save()
@@ -30,15 +34,24 @@ class Config {
 
         @JvmStatic
         fun save() {
-            val file = MinecraftClient.getInstance().runDirectory.resolve("config/bind_cmd.ini")
+            ensureConfigDirExists()
+            val file = MinecraftClient.getInstance().runDirectory.resolve(CONFIG_FILE)
             file.writeText(encode(bindings))
         }
 
         @JvmStatic
         private fun createBackup() {
-            val file = MinecraftClient.getInstance().runDirectory.resolve("config/bind_cmd.ini")
-            val backupFile = MinecraftClient.getInstance().runDirectory.resolve("config/bind_cmd.ini.bak")
+            val file = MinecraftClient.getInstance().runDirectory.resolve(CONFIG_FILE)
+            val backupFile = MinecraftClient.getInstance().runDirectory.resolve("$CONFIG_FILE.bak")
             file.copyTo(backupFile, true)
+        }
+
+        @JvmStatic
+        private fun ensureConfigDirExists() {
+            val configDir = MinecraftClient.getInstance().runDirectory.resolve(CONFIG_DIR)
+            if (!configDir.exists()) {
+                configDir.mkdir()
+            }
         }
 
         @JvmStatic
