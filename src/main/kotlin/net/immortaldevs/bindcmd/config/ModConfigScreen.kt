@@ -10,7 +10,6 @@ import net.minecraft.client.gui.widget.DirectionalLayoutWidget
 import net.minecraft.client.option.KeyBinding
 import net.minecraft.screen.ScreenTexts
 import net.minecraft.text.Text
-import net.minecraft.util.Util
 
 @Environment(EnvType.CLIENT)
 class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
@@ -19,7 +18,6 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
     Text.translatable("text.bindcmd.config.title")
 ) {
     var selectedKeyBinding: KeyBinding? = null
-    private var lastKeyCodeUpdateTime: Long = 0
     private var bindingsList: BindingsListWidget? = null
 
     override fun initBody() {
@@ -65,7 +63,6 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
                     binding.setBoundKey(keyCode, scanCode)
             }
             selectedKeyBinding = null
-            lastKeyCodeUpdateTime = Util.getMeasuringTimeMs()
             bindingsList?.update()
             true
         } else {

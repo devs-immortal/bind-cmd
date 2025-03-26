@@ -14,7 +14,6 @@ import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.client.gui.widget.ElementListWidget
 import net.minecraft.client.gui.widget.TextFieldWidget
 import net.minecraft.client.option.KeyBinding
-import net.minecraft.client.util.InputUtil
 import net.minecraft.text.Text
 import net.minecraft.util.Formatting
 import java.util.function.Consumer
@@ -143,7 +142,7 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
 
             val mutableText = Text.empty()
             if (!binding.key.isUnbound) {
-                var allKeys: Array<KeyBinding> = this@BindingsListWidget.client.options.allKeys;
+                var allKeys: Array<KeyBinding> = this@BindingsListWidget.client.options.allKeys
                 allKeys = allKeys.filter { it != binding.key && binding.key.equals(it) }.toTypedArray()
                 for (keyBinding in allKeys) {
                     if (duplicate)
@@ -163,7 +162,7 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
             }
 
             if (this@BindingsListWidget.parent.selectedKeyBinding === binding.key) {
-                val key = editButton.message.copy().formatted(*arrayOf(Formatting.WHITE, Formatting.UNDERLINE));
+                val key = editButton.message.copy().formatted(*arrayOf(Formatting.WHITE, Formatting.UNDERLINE))
                 editButton.message = Text.literal("> ").append(key).append(" <").formatted(Formatting.YELLOW)
             }
         }

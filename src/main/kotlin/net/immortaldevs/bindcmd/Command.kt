@@ -49,7 +49,7 @@ class Command(command: String) {
             try {
                 expression = replaceVariables(expression)
                 expression = evaluateExpression(expression)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 // Ignore
             }
             expression
