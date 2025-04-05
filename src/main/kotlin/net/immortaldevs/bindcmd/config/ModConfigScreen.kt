@@ -77,7 +77,7 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
 
     private fun addButtonPressed() {
         val binding = CommandBinding("/")
-        Config.bindings.add(binding)
+        Config.add(binding)
         bindingsList?.addBinding(binding)
         bindingsList?.update()
     }

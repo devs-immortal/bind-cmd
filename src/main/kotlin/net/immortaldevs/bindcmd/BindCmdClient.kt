@@ -1,16 +1,29 @@
 package net.immortaldevs.bindcmd
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry
 import net.immortaldevs.bindcmd.config.Config
 import net.minecraft.client.MinecraftClient
 
 private var lastKeyPress: Long = 0
 private const val COOLDOWN: Long = 200
 
-@Suppress("unused")
-fun init() {
+fun initClient() {
+    PayloadTypeRegistry.playS2C().register(
+        ConfigS2CPayload.ID, ConfigS2CPayload.CODEC
+    )
+
     Config.load()
-    ClientTickEvents.END_CLIENT_TICK.register(ClientTickEvents.EndTick { client -> onEndClientTick(client) })
+
+    ClientTickEvents.END_CLIENT_TICK.register { client -> onEndClientTick(client) }
+    ClientPlayConnectionEvents.JOIN.register { _, _, _ -> Config.clearServerBindings() }
+    ClientPlayConnectionEvents.DISCONNECT.register { _, _ -> Config.clearServerBindings() }
+
+    ClientPlayNetworking.registerGlobalReceiver<ConfigS2CPayload>(ConfigS2CPayload.ID) { payload, _ ->
+        Config.setServerBindings(payload.config)
+    }
 }
 
 private fun onEndClientTick(client: MinecraftClient) {

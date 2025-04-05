@@ -174,7 +174,7 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
 
         private fun deleteButtonPressed() {
             binding.unbind()
-            Config.bindings.remove(binding)
+            Config.remove(binding)
 
             val list = this@BindingsListWidget
             list.parent.selectedKeyBinding = null

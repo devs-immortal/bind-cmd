@@ -9,11 +9,13 @@ class Config {
         private val loader: ConfigLoader by lazy {
             ConfigLoader(MinecraftClient.getInstance().runDirectory)
         }
-
-        @JvmStatic
-        var bindings = mutableListOf(
+        private var serverBindings = listOf<CommandBinding>()
+        private var clientBindings = mutableListOf(
             CommandBinding("/help", InputUtil.GLFW_KEY_H),
         )
+
+        val bindings: List<CommandBinding>
+            get() = clientBindings + serverBindings
 
         @JvmStatic
         fun load() {
@@ -22,12 +24,32 @@ class Config {
                 save(true)
                 return
             }
-            bindings = fromMap(data).toMutableList()
+            clientBindings = fromMap(data).toMutableList()
+        }
+
+        @JvmStatic
+        fun remove(binding: CommandBinding) {
+            clientBindings.remove(binding)
+        }
+
+        @JvmStatic
+        fun add(binding: CommandBinding) {
+            clientBindings.add(binding)
         }
 
         @JvmStatic
         fun save(backup: Boolean = false) {
-            loader.write(toMap(bindings), backup)
+            loader.write(toMap(clientBindings), backup)
+        }
+
+        @JvmStatic
+        fun setServerBindings(data: Map<String, String>) {
+            serverBindings = fromMap(data)
+        }
+
+        @JvmStatic
+        fun clearServerBindings() {
+            serverBindings = emptyList()
         }
 
         @JvmStatic

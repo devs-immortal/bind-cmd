@@ -22,10 +22,13 @@
   },
   "license": "MIT",
   "icon": "assets/bindcmd/icon.png",
-  "environment": "client",
+  "environment": "*",
   "entrypoints": {
     "client": [
-      "net.immortaldevs.bindcmd.BindCmdModKt::init"
+      "net.immortaldevs.bindcmd.BindCmdClientKt::initClient"
+    ],
+    "server": [
+      "net.immortaldevs.bindcmd.BindCmdServerKt::initServer"
     ],
     "modmenu": [
       "net.immortaldevs.bindcmd.config.ModMenuIntegration"
