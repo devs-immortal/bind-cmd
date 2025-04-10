@@ -1,5 +1,6 @@
 package net.immortaldevs.bindcmd.config
 
+import net.immortaldevs.bindcmd.BindSource
 import net.immortaldevs.bindcmd.CommandBinding
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.util.InputUtil
@@ -32,7 +33,7 @@ class Config {
         fun loadWorldConfig(path: Path?) {
             if (path == null) return
             val data = ConfigLoader(path.toFile()).read() ?: return
-            serverBindings = fromMap(data)
+            serverBindings = fromMap(data, BindSource.WORLD)
         }
 
         @JvmStatic
@@ -52,7 +53,7 @@ class Config {
 
         @JvmStatic
         fun setServerBindings(data: Map<String, String>) {
-            serverBindings = fromMap(data)
+            serverBindings = fromMap(data, BindSource.SERVER)
         }
 
         @JvmStatic
@@ -68,9 +69,9 @@ class Config {
         }
 
         @JvmStatic
-        private fun fromMap(data: Map<String, String>): List<CommandBinding> {
+        private fun fromMap(data: Map<String, String>, source: BindSource = BindSource.CLIENT): List<CommandBinding> {
             return data.map { (key, command) ->
-                CommandBinding(command, key)
+                CommandBinding(command, key, source)
             }
         }
     }

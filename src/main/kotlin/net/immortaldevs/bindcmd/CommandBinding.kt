@@ -7,8 +7,9 @@ class CommandBinding(var command: String, var key: KeyBinding) {
 
     constructor(command: String) : this(command, KeyBinding("key.keyboard.unknown", -1, "key.categories.bindcmd"))
 
-    constructor(command: String, translationKey: String) : this(command) {
+    constructor(command: String, translationKey: String, source: BindSource = BindSource.CLIENT) : this(command) {
         this.command = command
+        this.source = source
         val keyCode = InputUtil.fromTranslationKey(translationKey).code
         val type = if (translationKey.startsWith("key.mouse")) InputUtil.Type.MOUSE else InputUtil.Type.KEYSYM
         this.key = KeyBinding(translationKey, type, keyCode, "key.categories.bindcmd")
@@ -19,6 +20,7 @@ class CommandBinding(var command: String, var key: KeyBinding) {
         setBoundKey(key, 0)
     }
 
+    var source: BindSource = BindSource.CLIENT
     val isUnknown: Boolean get() = key.translationKey.endsWith("unknown")
     val isPressed: Boolean get() = key.isPressed
     var wasPressed: Boolean = false

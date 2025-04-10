@@ -3,6 +3,7 @@ package net.immortaldevs.bindcmd.config
 import com.google.common.collect.ImmutableList
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
+import net.immortaldevs.bindcmd.BindSource
 import net.immortaldevs.bindcmd.CommandBinding
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.font.TextRenderer
@@ -26,6 +27,9 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
         parent.layout.headerHeight,
         20
     ) {
+
+    private val serverBindingTooltip: Tooltip = Tooltip.of(Text.translatable("text.bindcmd.config.server_setting"))
+    private val worldBindingTooltip: Tooltip = Tooltip.of(Text.translatable("text.bindcmd.config.world_setting"))
 
     init {
         Config.bindings.forEach { binding -> addEntry(BindingEntry(binding)) }
@@ -95,11 +99,19 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
         ) {
             val textRenderer: TextRenderer = this@BindingsListWidget.client.textRenderer
             val textWidth: Int = entryWidth - editButton.width - deleteButton.width - 3
+            val isClient: Boolean = binding.source == BindSource.CLIENT
+            val tooltip = when (binding.source) {
+                BindSource.SERVER -> serverBindingTooltip
+                BindSource.WORLD -> worldBindingTooltip
+                else -> null
+            }
 
             if (mouseX > x - 5 && mouseX < x + 123 && mouseY > y && mouseY < y + 20) {
                 inputField.x = x - 4
                 inputField.y = y + 2
                 inputField.width = textWidth
+                inputField.tooltip = tooltip
+                inputField.active = isClient
                 inputField.render(context, mouseX, mouseY, tickDelta)
                 if (!this.hovered && inputField.isFocused) {
                     inputField.isFocused = false
@@ -113,9 +125,13 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
                 this.hovered = false
             }
 
+            editButton.tooltip = tooltip
+            editButton.active = isClient
             editButton.x = x + entryWidth - editButton.width - deleteButton.width - 2
             editButton.y = y
 
+            deleteButton.tooltip = tooltip
+            deleteButton.active = isClient
             deleteButton.x = x + entryWidth - deleteButton.width
             deleteButton.y = y
             deleteButton.render(context, mouseX, mouseY, tickDelta)
