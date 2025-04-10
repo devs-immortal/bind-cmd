@@ -1,5 +1,7 @@
 {
   "text.bindcmd.config.title": "Configure BindCommands",
   "text.bindcmd.config.add_command": "Add Command",
-  "text.bindcmd.config.remove": "Remove"
+  "text.bindcmd.config.remove": "Remove",
+  "text.bindcmd.config.server_setting": "Set by server configuration",
+  "text.bindcmd.config.world_setting": "Set by world configuration"
 }

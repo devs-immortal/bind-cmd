@@ -1,5 +1,7 @@
 {
   "text.bindcmd.config.title": "Konfiguriere BindCommands",
   "text.bindcmd.config.add_command": "Befehl hinzufügen",
-  "text.bindcmd.config.remove": "Löschen"
+  "text.bindcmd.config.remove": "Löschen",
+  "text.bindcmd.config.server_setting": "Durch Serverkonfiguration festgelegt",
+  "text.bindcmd.config.world_setting": "Durch Weltkonfiguration festgelegt"
 }

@@ -1,5 +1,7 @@
 {
   "text.bindcmd.config.title": "Agordi BindCommands",
   "text.bindcmd.config.add_command": "Aldoni komandon",
-  "text.bindcmd.config.remove": "Forigi"
+  "text.bindcmd.config.remove": "Forigi",
+  "text.bindcmd.config.server_setting": "Difinite per servilaj agordoj",
+  "text.bindcmd.config.world_setting": "Difinite per mondaj agordoj"
 }

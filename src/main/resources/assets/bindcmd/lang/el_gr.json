@@ -1,5 +1,7 @@
 {
   "text.bindcmd.config.title": "Διαμόρφωση BindCommands",
   "text.bindcmd.config.add_command": "Προσθήκη εντολής",
-  "text.bindcmd.config.remove": "Αφαίρεσε"
+  "text.bindcmd.config.remove": "Αφαίρεσε",
+  "text.bindcmd.config.server_setting": "Ορισμένο από την ρύθμιση του διακομιστή",
+  "text.bindcmd.config.world_setting": "Ορισμένο από τη ρύθμιση του κόσμου"
 }

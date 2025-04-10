@@ -1,5 +1,7 @@
 {
   "text.bindcmd.config.title": "Konfigurer BindCommands",
   "text.bindcmd.config.add_command": "Legg til kommando",
-  "text.bindcmd.config.remove": "Fjern"
+  "text.bindcmd.config.remove": "Fjern",
+  "text.bindcmd.config.server_setting": "Sett av serverkonfigurasjonen",
+  "text.bindcmd.config.world_setting": "Sett av verdskonfigurasjonen"
 }
