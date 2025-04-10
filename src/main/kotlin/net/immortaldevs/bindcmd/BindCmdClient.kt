@@ -18,12 +18,24 @@ fun initClient() {
     Config.load()
 
     ClientTickEvents.END_CLIENT_TICK.register { client -> onEndClientTick(client) }
-    ClientPlayConnectionEvents.JOIN.register { _, _, _ -> Config.clearServerBindings() }
-    ClientPlayConnectionEvents.DISCONNECT.register { _, _ -> Config.clearServerBindings() }
+    ClientPlayConnectionEvents.JOIN.register { _, _, client -> onPlayerJoin(client) }
+    ClientPlayConnectionEvents.DISCONNECT.register { _, _ -> onPlayerDisconnect() }
 
     ClientPlayNetworking.registerGlobalReceiver<ConfigS2CPayload>(ConfigS2CPayload.ID) { payload, _ ->
         Config.setServerBindings(payload.config)
     }
+}
+
+private fun onPlayerJoin(client: MinecraftClient) {
+    Config.clearServerBindings()
+    if (client.server?.isSingleplayer == true) {
+        val dir = client.server?.session?.directory?.path()
+        Config.loadWorldConfig(dir)
+    }
+}
+
+private fun onPlayerDisconnect() {
+    Config.clearServerBindings()
 }
 
 private fun onEndClientTick(client: MinecraftClient) {

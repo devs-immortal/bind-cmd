@@ -3,6 +3,7 @@ package net.immortaldevs.bindcmd.config
 import net.immortaldevs.bindcmd.CommandBinding
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.util.InputUtil
+import java.nio.file.Path
 
 class Config {
     companion object {
@@ -25,6 +26,13 @@ class Config {
                 return
             }
             clientBindings = fromMap(data).toMutableList()
+        }
+
+        @JvmStatic
+        fun loadWorldConfig(path: Path?) {
+            if (path == null) return
+            val data = ConfigLoader(path.toFile()).read() ?: return
+            serverBindings = fromMap(data)
         }
 
         @JvmStatic

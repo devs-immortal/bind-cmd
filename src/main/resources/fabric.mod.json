@@ -35,6 +35,7 @@
     ]
   },
   "mixins": [],
+  "accessWidener": "bindcmd.accesswidener",
   "depends": {
     "fabric": "*",
     "fabric-api": "*",
