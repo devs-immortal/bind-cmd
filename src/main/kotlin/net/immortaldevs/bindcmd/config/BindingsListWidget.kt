@@ -16,6 +16,7 @@ import net.minecraft.client.gui.widget.ElementListWidget
 import net.minecraft.client.gui.widget.TextFieldWidget
 import net.minecraft.client.option.KeyBinding
 import net.minecraft.text.Text
+import net.minecraft.util.Colors
 import net.minecraft.util.Formatting
 import java.util.function.Consumer
 
@@ -110,7 +111,7 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
                 inputField.x = x - 4
                 inputField.y = y + 2
                 inputField.width = textWidth
-                inputField.tooltip = tooltip
+                inputField.setTooltip(tooltip)
                 inputField.active = isClient
                 inputField.render(context, mouseX, mouseY, tickDelta)
                 if (!this.hovered && inputField.isFocused) {
@@ -121,16 +122,16 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
             } else {
                 val yPosition = y + entryHeight / 2 - 2
                 val text = cutString(binding.command, textRenderer, textWidth - 12)
-                context?.drawText(textRenderer, text, x, yPosition, 16777215, false)
+                context?.drawTextWithShadow(textRenderer, text, x, yPosition, Colors.WHITE)
                 this.hovered = false
             }
 
-            editButton.tooltip = tooltip
+            editButton.setTooltip(tooltip)
             editButton.active = isClient
             editButton.x = x + entryWidth - editButton.width - deleteButton.width - 2
             editButton.y = y
 
-            deleteButton.tooltip = tooltip
+            deleteButton.setTooltip(tooltip)
             deleteButton.active = isClient
             deleteButton.x = x + entryWidth - deleteButton.width
             deleteButton.y = y
@@ -172,9 +173,9 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
                 val key = editButton.message.copy().formatted(Formatting.WHITE)
                 val tooltip = Text.translatable("controls.keybinds.duplicateKeybinds", *arrayOf<Any>(mutableText))
                 editButton.message = Text.literal("[ ").append(key).append(" ]").formatted(Formatting.RED)
-                editButton.tooltip = Tooltip.of(tooltip)
+                editButton.setTooltip(Tooltip.of(tooltip))
             } else {
-                editButton.tooltip = null
+                editButton.setTooltip(null)
             }
 
             if (this@BindingsListWidget.parent.selectedKeyBinding === binding.key) {

@@ -7,6 +7,7 @@ import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.screen.option.GameOptionsScreen
 import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget
+import net.minecraft.client.gui.widget.TextWidget
 import net.minecraft.client.option.KeyBinding
 import net.minecraft.screen.ScreenTexts
 import net.minecraft.text.Text
@@ -29,6 +30,15 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
     override fun addOptions() {
     }
 
+    override fun initHeader() {
+        this.layout.addHeader(
+            TextWidget(
+                Text.translatable("text.bindcmd.config.title"),
+                this.textRenderer,
+            )
+        )
+    }
+
     override fun initFooter() {
         val addButton = ButtonWidget.builder(Text.translatable("text.bindcmd.config.add_command")) {
             addButtonPressed()
@@ -40,6 +50,11 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
         ) as DirectionalLayoutWidget
         directionalLayoutWidget.add(addButton)
         directionalLayoutWidget.add(doneButton)
+    }
+
+    override fun refreshWidgetPositions() {
+        this.layout.refreshPositions()
+        bindingsList?.position(this.width, this.layout)
     }
 
     override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
