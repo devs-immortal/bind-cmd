@@ -12,9 +12,7 @@ class Config {
             ConfigLoader(MinecraftClient.getInstance().runDirectory)
         }
         private var serverBindings = listOf<CommandBinding>()
-        private var clientBindings = mutableListOf(
-            CommandBinding("/help", InputUtil.GLFW_KEY_H),
-        )
+        private var clientBindings = mutableListOf<CommandBinding>()
 
         val bindings: List<CommandBinding>
             get() = clientBindings + serverBindings

@@ -38,6 +38,7 @@ class CommandBinding(var command: String, var key: KeyBinding) {
     }
 
     fun unbind() {
-        this.key.setBoundKey(InputUtil.UNKNOWN_KEY)
+        KeyBinding.KEYS_BY_ID.remove(this.key.translationKey)
+        KeyBinding.updateKeysByCode()
     }
 }
