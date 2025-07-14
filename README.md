@@ -35,4 +35,4 @@ To use the BindCommands mod, follow these steps:
 [![Discord](https://img.shields.io/discord/770691727568404521.svg?logoColor=FFFFFF&logo=discord&color=7289DA)](https://discord.com/invite/TvuNtNYEvr)
 
 If you encounter any issues while using the BindCommands mod or have any suggestions for improvement,
-please feel free to open an issue on the mod's [GitHub page](https://github.com/devs-immortal/bind-cmd/issues) or visit [our Discord](https://discord.com/invite/wmMa47n). We appreciate any and all feedback!
+please feel free to open an issue on the mod's [GitHub page](https://github.com/devs-immortal/bind-cmd/issues) or visit [our Discord](https://discord.com/invite/TvuNtNYEvr). We appreciate any and all feedback!
