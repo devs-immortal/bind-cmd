@@ -3,7 +3,6 @@ package net.immortaldevs.bindcmd.config
 import net.immortaldevs.bindcmd.BindSource
 import net.immortaldevs.bindcmd.CommandBinding
 import net.minecraft.client.MinecraftClient
-import net.minecraft.client.util.InputUtil
 import java.nio.file.Path
 
 class Config {

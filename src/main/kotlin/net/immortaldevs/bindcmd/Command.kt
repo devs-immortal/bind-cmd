@@ -14,19 +14,27 @@ class Command(command: String) {
     var command: String private set
 
     init {
-        if (command.isEmpty()) {
-            this.type = CmdType.NONE
-            this.command = ""
-        } else if (command[0] == '/') {
-            this.type = CmdType.COMMAND
-            this.command = processMessage(command.substring(1))
-        } else if (command[0] == '@') {
-            val (type, cmd) = getLastMessage(command) ?: Pair(CmdType.NONE, "")
-            this.type = type
-            this.command = processMessage(cmd)
-        } else {
-            this.type = CmdType.MESSAGE
-            this.command = processMessage(command)
+        when {
+            command.isEmpty() -> {
+                this.type = CmdType.NONE
+                this.command = ""
+            }
+
+            command[0] == '/' -> {
+                this.type = CmdType.COMMAND
+                this.command = processMessage(command.substring(1))
+            }
+
+            command[0] == '@' -> {
+                val (type, cmd) = getLastMessage(command) ?: Pair(CmdType.NONE, "")
+                this.type = type
+                this.command = processMessage(cmd)
+            }
+
+            else -> {
+                this.type = CmdType.MESSAGE
+                this.command = processMessage(command)
+            }
         }
     }
 

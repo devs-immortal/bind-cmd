@@ -1,6 +1,5 @@
 package net.immortaldevs.bindcmd.config
 
-import com.google.common.collect.ImmutableList
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.immortaldevs.bindcmd.BindSource
@@ -146,11 +145,11 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
         }
 
         override fun children(): List<Element?>? {
-            return ImmutableList.of(editButton, deleteButton, inputField)
+            return listOf(editButton, deleteButton, inputField)
         }
 
         override fun selectableChildren(): List<Selectable?>? {
-            return ImmutableList.of(editButton, deleteButton, inputField)
+            return listOf(editButton, deleteButton, inputField)
         }
 
         fun update() {
@@ -207,9 +206,9 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
             var len = text.length
             while (width > maxWidth && len > 0) {
                 len--
-                width = textRenderer.getWidth(text.substring(0, len))
+                width = textRenderer.getWidth(text.take(len))
             }
-            return text.substring(0, len) + "…"
+            return text.take(len) + "…"
         }
     }
 }
