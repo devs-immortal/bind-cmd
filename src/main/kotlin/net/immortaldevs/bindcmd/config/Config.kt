@@ -23,14 +23,14 @@ class Config {
                 save(true)
                 return
             }
-            clientBindings = fromMap(data).toMutableList()
+            clientBindings = fromTuples(data).toMutableList()
         }
 
         @JvmStatic
         fun loadWorldConfig(path: Path?) {
             if (path == null) return
             val data = ConfigLoader(path.toFile()).read() ?: return
-            serverBindings = fromMap(data, BindSource.WORLD)
+            serverBindings = fromTuples(data, BindSource.WORLD)
         }
 
         @JvmStatic
@@ -45,12 +45,12 @@ class Config {
 
         @JvmStatic
         fun save(backup: Boolean = false) {
-            loader.write(toMap(clientBindings), backup)
+            loader.write(toTuples(clientBindings), backup)
         }
 
         @JvmStatic
-        fun setServerBindings(data: Map<String, String>) {
-            serverBindings = fromMap(data, BindSource.SERVER)
+        fun setServerBindings(data: List<Pair<String, String>>) {
+            serverBindings = fromTuples(data, BindSource.SERVER)
         }
 
         @JvmStatic
@@ -59,14 +59,17 @@ class Config {
         }
 
         @JvmStatic
-        private fun toMap(data: List<CommandBinding>): Map<String, String> {
-            return data.associate { binding ->
+        private fun toTuples(data: List<CommandBinding>): List<Pair<String, String>> {
+            return data.map { binding ->
                 binding.key.translationKey to binding.command
             }
         }
 
         @JvmStatic
-        private fun fromMap(data: Map<String, String>, source: BindSource = BindSource.CLIENT): List<CommandBinding> {
+        private fun fromTuples(
+            data: List<Pair<String, String>>,
+            source: BindSource = BindSource.CLIENT
+        ): List<CommandBinding> {
             return data.map { (key, command) ->
                 CommandBinding(command, key, source)
             }

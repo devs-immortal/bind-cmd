@@ -12,10 +12,10 @@ fun initServer() {
         ConfigS2CPayload.ID, ConfigS2CPayload.CODEC
     )
 
-    var bindings = mapOf<String, String>()
+    var bindings = listOf<Pair<String, String>>()
     ServerLifecycleEvents.SERVER_STARTED.register(ServerLifecycleEvents.ServerStarted { minecraftServer ->
         val loader = ConfigLoader(minecraftServer.runDirectory.toFile())
-        bindings = loader.read() ?: emptyMap()
+        bindings = loader.read() ?: emptyList()
     })
     ServerEntityEvents.ENTITY_LOAD.register(ServerEntityEvents.Load { entity, _ ->
         if (entity !is ServerPlayerEntity) return@Load

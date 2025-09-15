@@ -9,7 +9,7 @@ class ConfigLoader(private val runDirectory: File) {
         private const val CONFIG_BACKUP_FILE = "$CONFIG_DIR/bind_cmd.ini.bak"
     }
 
-    fun read(): Map<String, String>? {
+    fun read(): List<Pair<String, String>>? {
         ensureConfigDirExists()
         val file = runDirectory.resolve(CONFIG_FILE)
         if (!file.exists()) {
@@ -25,7 +25,7 @@ class ConfigLoader(private val runDirectory: File) {
         }
     }
 
-    fun write(data: Map<String, String>, backup: Boolean = false) {
+    fun write(data: List<Pair<String, String>>, backup: Boolean = false) {
         ensureConfigDirExists()
         val file = runDirectory.resolve(backup.let {
             if (it) CONFIG_BACKUP_FILE else CONFIG_FILE
@@ -40,21 +40,21 @@ class ConfigLoader(private val runDirectory: File) {
         }
     }
 
-    private fun decode(input: String): Map<String, String> {
+    private fun decode(input: String): List<Pair<String, String>> {
         val lines = input.split("\n").filter { it.isNotEmpty() }
-        val map = mutableMapOf<String, String>()
+        val data = mutableListOf<Pair<String, String>>()
         for (line in lines) {
             val parts = line.split("=\"")
             if (parts.size == 2) {
                 val translationKey = parts[0]
                 val command = parts[1].substring(0, parts[1].length - 1)
-                map[translationKey] = command
+                data.add(Pair(translationKey, command))
             }
         }
-        return map
+        return data
     }
 
-    private fun encode(map: Map<String, String>): String {
-        return map.entries.joinToString("\n") { "${it.key}=\"${it.value}\"" }
+    private fun encode(data: List<Pair<String, String>>): String {
+        return data.joinToString("\n") { "${it.first}=\"${it.second}\"" }
     }
 }
