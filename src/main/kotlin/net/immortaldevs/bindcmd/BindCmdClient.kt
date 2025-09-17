@@ -47,7 +47,7 @@ private fun handleBinding(client: MinecraftClient, binding: CommandBinding) {
     if (binding.isUnknown) return
 
     if (binding.isPressed && !binding.wasPressed) {
-        val commands = Config.bindings.filter { it.key.translationKey == binding.key.translationKey }.map { it.command }
+        val commands = Config.bindings.filter { it.translationKey == binding.translationKey }.map { it.command }
         for (command in commands) {
             val cmd = Command(command)
             when (cmd.type) {

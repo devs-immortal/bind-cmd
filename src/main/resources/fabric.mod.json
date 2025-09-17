@@ -41,7 +41,7 @@
     "fabric-api": "*",
     "fabric-language-kotlin": "*",
     "fabricloader": ">=0.17.0",
-    "minecraft": "1.21.8",
+    "minecraft": "1.21.9",
     "modmenu": "*"
   }
 }

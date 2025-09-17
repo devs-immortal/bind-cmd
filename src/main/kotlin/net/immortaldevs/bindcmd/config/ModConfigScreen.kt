@@ -3,11 +3,13 @@ package net.immortaldevs.bindcmd.config
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.immortaldevs.bindcmd.CommandBinding
+import net.minecraft.client.gui.Click
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.screen.option.GameOptionsScreen
 import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget
 import net.minecraft.client.gui.widget.TextWidget
+import net.minecraft.client.input.KeyInput
 import net.minecraft.client.option.KeyBinding
 import net.minecraft.screen.ScreenTexts
 import net.minecraft.text.Text
@@ -57,31 +59,32 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
         bindingsList?.position(this.width, this.layout)
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun mouseClicked(click: Click, doubled: Boolean): Boolean {
         return if (selectedKeyBinding != null) {
             Config.bindings.forEach { binding ->
                 if (binding.key == selectedKeyBinding)
-                    binding.setBoundMouse(button)
+                    binding.setBoundMouse(click.button())
             }
             selectedKeyBinding = null
             bindingsList?.update()
             true
         } else {
-            super.mouseClicked(mouseX, mouseY, button)
+            super.mouseClicked(click, doubled)
         }
     }
 
-    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
+    override fun keyPressed(input: KeyInput): Boolean {
         return if (selectedKeyBinding != null) {
             Config.bindings.forEach { binding ->
-                if (binding.key == selectedKeyBinding)
-                    binding.setBoundKey(keyCode, scanCode)
+                if (binding.key == selectedKeyBinding) {
+                    binding.setBoundKey(input)
+                }
             }
             selectedKeyBinding = null
             bindingsList?.update()
             true
         } else {
-            super.keyPressed(keyCode, scanCode, modifiers)
+            super.keyPressed(input)
         }
     }
 

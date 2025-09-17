@@ -20,7 +20,7 @@ class ConfigLoader(private val runDirectory: File) {
             val stream = file.inputStream()
             val content = stream.readBytes().decodeToString()
             return decode(content)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return null
         }
     }

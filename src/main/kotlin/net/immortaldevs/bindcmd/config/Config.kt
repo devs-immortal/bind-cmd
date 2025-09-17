@@ -61,7 +61,7 @@ class Config {
         @JvmStatic
         private fun toTuples(data: List<CommandBinding>): List<Pair<String, String>> {
             return data.map { binding ->
-                binding.key.translationKey to binding.command
+                binding.translationKey to binding.command
             }
         }
 

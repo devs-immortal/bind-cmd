@@ -71,7 +71,7 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
             0,
             124,
             16,
-            Text.of(binding.key.translationKey)
+            binding.key.boundKeyLocalizedText
         )
 
         init {
@@ -87,18 +87,13 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
 
         override fun render(
             context: DrawContext?,
-            index: Int,
-            y: Int,
-            x: Int,
-            entryWidth: Int,
-            entryHeight: Int,
             mouseX: Int,
             mouseY: Int,
             hovered: Boolean,
             tickDelta: Float
         ) {
             val textRenderer: TextRenderer = this@BindingsListWidget.client.textRenderer
-            val textWidth: Int = entryWidth - editButton.width - deleteButton.width - 3
+            val textWidth: Int = width - editButton.width - deleteButton.width - 3
             val isClient: Boolean = binding.source == BindSource.CLIENT
             val tooltip = when (binding.source) {
                 BindSource.SERVER -> serverBindingTooltip
@@ -119,7 +114,7 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
                 }
                 this.hovered = true
             } else {
-                val yPosition = y + entryHeight / 2 - 2
+                val yPosition = y + height / 2 - 2
                 val text = cutString(binding.command, textRenderer, textWidth - 12)
                 context?.drawTextWithShadow(textRenderer, text, x, yPosition, Colors.WHITE)
                 this.hovered = false
@@ -127,28 +122,28 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
 
             editButton.setTooltip(tooltip)
             editButton.active = isClient
-            editButton.x = x + entryWidth - editButton.width - deleteButton.width - 2
+            editButton.x = x + width - editButton.width - deleteButton.width - 2
             editButton.y = y
 
             deleteButton.setTooltip(tooltip)
             deleteButton.active = isClient
-            deleteButton.x = x + entryWidth - deleteButton.width
+            deleteButton.x = x + width - deleteButton.width
             deleteButton.y = y
             deleteButton.render(context, mouseX, mouseY, tickDelta)
 
             if (duplicate) {
                 val j = editButton.x - 6
-                context?.fill(j, y + 2, j + 3, y + entryHeight + 2, -65536)
+                context?.fill(j, y + 2, j + 3, y + height + 2, -65536)
             }
 
             editButton.render(context, mouseX, mouseY, tickDelta)
         }
 
-        override fun children(): List<Element?>? {
+        override fun children(): List<Element?> {
             return listOf(editButton, deleteButton, inputField)
         }
 
-        override fun selectableChildren(): List<Selectable?>? {
+        override fun selectableChildren(): List<Selectable?> {
             return listOf(editButton, deleteButton, inputField)
         }
 
@@ -164,7 +159,7 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
                     if (duplicate)
                         mutableText.append(", ")
                     duplicate = true
-                    mutableText.append(Text.translatable(keyBinding.translationKey))
+                    mutableText.append(keyBinding.boundKeyLocalizedText)
                 }
             }
 
