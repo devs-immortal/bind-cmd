@@ -65,7 +65,7 @@ public final class Config {
     private static List<ConfigEntry> toEntries(List<CommandBinding> data) {
         List<ConfigEntry> result = new ArrayList<>(data.size());
         for (CommandBinding binding : data) {
-            result.add(new ConfigEntry(binding.getTranslationKey(), binding.getCommand()));
+            result.add(new ConfigEntry(binding.getTranslationKey(), binding.command));
         }
         return result;
     }

@@ -87,12 +87,12 @@ public final class BindingsListWidget extends ElementListWidget<BindingsListWidg
             );
             this.inputField.setChangedListener(this::inputFieldChanged);
             this.inputField.setMaxLength(256);
-            this.inputField.setText(binding.getCommand());
+            this.inputField.setText(binding.command);
             this.update();
         }
 
         private void inputFieldChanged(String text) {
-            this.binding.setCommand(text);
+            this.binding.command = text;
         }
 
         @Override
@@ -125,7 +125,7 @@ public final class BindingsListWidget extends ElementListWidget<BindingsListWidg
                 this.hovered = true;
             } else {
                 int yPosition = y + height / 2 - 2;
-                String text = this.cutString(this.binding.getCommand(), textRenderer, textWidth - 12);
+                String text = this.cutString(this.binding.command, textRenderer, textWidth - 12);
                 context.drawTextWithShadow(textRenderer, text, x, yPosition, Colors.WHITE);
                 this.hovered = false;
             }

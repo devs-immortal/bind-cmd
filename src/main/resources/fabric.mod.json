@@ -25,10 +25,10 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "net.immortaldevs.bindcmd.BindCmdClientKt::initClient"
+      "net.immortaldevs.bindcmd.BindCmdClient"
     ],
     "server": [
-      "net.immortaldevs.bindcmd.BindCmdServerKt::initServer"
+      "net.immortaldevs.bindcmd.BindCmdServer"
     ],
     "modmenu": [
       "net.immortaldevs.bindcmd.config.ModMenuIntegration"
