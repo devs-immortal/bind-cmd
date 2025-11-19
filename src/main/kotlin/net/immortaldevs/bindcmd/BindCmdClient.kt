@@ -40,14 +40,14 @@ private fun onPlayerDisconnect() {
 
 private fun onEndClientTick(client: MinecraftClient) {
     if (System.currentTimeMillis() - lastKeyPress < COOLDOWN) return
-    Config.bindings.forEach { binding -> handleBinding(client, binding) }
+    Config.getBindings().forEach { binding -> handleBinding(client, binding) }
 }
 
 private fun handleBinding(client: MinecraftClient, binding: CommandBinding) {
     if (binding.isUnknown) return
 
     if (binding.isPressed && !binding.wasPressed) {
-        val commands = Config.bindings.filter { it.translationKey == binding.translationKey }.map { it.command }
+        val commands = Config.getBindings().filter { it.translationKey == binding.translationKey }.map { it.command }
         for (command in commands) {
             val cmd = Command(command)
             when (cmd.type) {

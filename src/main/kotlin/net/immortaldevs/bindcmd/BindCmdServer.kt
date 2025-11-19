@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
+import net.immortaldevs.bindcmd.config.ConfigEntry
 import net.immortaldevs.bindcmd.config.ConfigLoader
 import net.minecraft.server.network.ServerPlayerEntity
 
@@ -12,7 +13,7 @@ fun initServer() {
         ConfigS2CPayload.ID, ConfigS2CPayload.CODEC
     )
 
-    var bindings = listOf<Pair<String, String>>()
+    var bindings = listOf<ConfigEntry>()
     ServerLifecycleEvents.SERVER_STARTED.register(ServerLifecycleEvents.ServerStarted { minecraftServer ->
         val loader = ConfigLoader(minecraftServer.runDirectory.toFile())
         bindings = loader.read() ?: emptyList()

@@ -61,7 +61,7 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
 
     override fun mouseClicked(click: Click, doubled: Boolean): Boolean {
         return if (selectedKeyBinding != null) {
-            Config.bindings.forEach { binding ->
+            Config.getBindings().forEach { binding ->
                 if (binding.key == selectedKeyBinding)
                     binding.setBoundMouse(click.button())
             }
@@ -75,7 +75,7 @@ class ModConfigScreen(parent: Screen?) : GameOptionsScreen(
 
     override fun keyPressed(input: KeyInput): Boolean {
         return if (selectedKeyBinding != null) {
-            Config.bindings.forEach { binding ->
+            Config.getBindings().forEach { binding ->
                 if (binding.key == selectedKeyBinding) {
                     binding.setBoundKey(input)
                 }

@@ -32,7 +32,7 @@ class BindingsListWidget(val parent: ModConfigScreen, client: MinecraftClient?) 
     private val worldBindingTooltip: Tooltip = Tooltip.of(Text.translatable("text.bindcmd.config.world_setting"))
 
     init {
-        Config.bindings.forEach { binding -> addEntry(BindingEntry(binding)) }
+        Config.getBindings().forEach { binding -> addEntry(BindingEntry(binding)) }
     }
 
     fun update() {
