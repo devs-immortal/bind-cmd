@@ -61,7 +61,7 @@ public final class BindingsListWidget extends ElementListWidget<BindingsListWidg
     }
 
     @Environment(EnvType.CLIENT)
-    public class BindingEntry extends ElementListWidget.Entry<BindingEntry> {
+    public class BindingEntry extends Entry<BindingEntry> {
         private final CommandBinding binding;
         private final ButtonWidget editButton;
         private final ButtonWidget deleteButton;

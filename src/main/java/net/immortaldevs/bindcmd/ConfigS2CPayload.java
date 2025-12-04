@@ -14,7 +14,7 @@ import java.util.List;
 
 public record ConfigS2CPayload(List<ConfigEntry> config) implements CustomPayload {
     private static final Identifier CONFIG_PAYLOAD_ID = Identifier.of("bindcmd", "config");
-    public static final CustomPayload.Id<ConfigS2CPayload> ID = new CustomPayload.Id<>(CONFIG_PAYLOAD_ID);
+    public static final Id<ConfigS2CPayload> ID = new Id<>(CONFIG_PAYLOAD_ID);
 
     public static final PacketCodec<ByteBuf, List<ConfigEntry>> TUPLES_CODEC = new PacketCodec<>() {
         @Override
@@ -45,7 +45,7 @@ public record ConfigS2CPayload(List<ConfigEntry> config) implements CustomPayloa
             PacketCodec.tuple(TUPLES_CODEC, ConfigS2CPayload::config, ConfigS2CPayload::new);
 
     @Override
-    public CustomPayload.Id<? extends CustomPayload> getId() {
+    public Id<? extends CustomPayload> getId() {
         return ID;
     }
 }

@@ -34,12 +34,12 @@
       "net.immortaldevs.bindcmd.config.ModMenuIntegration"
     ]
   },
-  "mixins": [],
+  "mixins": [
+    "bindcmd.mixins.json"
+  ],
   "accessWidener": "bindcmd.accesswidener",
   "depends": {
     "fabric": "*",
-    "fabric-api": "*",
-    "fabric-language-kotlin": "*",
     "fabricloader": ">=0.17.0",
     "minecraft": "1.21.10",
     "modmenu": "*"

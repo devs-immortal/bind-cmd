@@ -21,7 +21,7 @@ public final class Command {
             this.command = processMessage(message);
         } else {
             this.type = getType(command);
-            var message = this.type == CmdType.MESSAGE ? processMessage(command) : command;
+            var message = this.type == CmdType.MESSAGE ? command : command.substring(1);
             this.command = processMessage(message);
         }
     }
@@ -67,10 +67,9 @@ public final class Command {
     private String processMessage(String message) {
         if (!message.contains("$")) return message;
 
-        // Regex: ${...} or $word
         Pattern pattern = Pattern.compile("\\$\\{(.+?)}|\\$(\\w+)");
         Matcher matcher = pattern.matcher(message);
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
 
         while (matcher.find()) {
             String expression = matcher.group(1) != null ? matcher.group(1) : matcher.group(2);

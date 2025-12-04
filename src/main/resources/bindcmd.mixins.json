@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.immortaldevs.bindcmd.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+  ],
+  "server": [
+    "MinecraftServerMixin",
+    "ServerWorldServerEntityHandlerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}
