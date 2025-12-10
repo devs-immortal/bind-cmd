@@ -66,7 +66,6 @@ public final class BindingsListWidget extends ElementListWidget<BindingsListWidg
         private final ButtonWidget editButton;
         private final ButtonWidget deleteButton;
         private final TextFieldWidget inputField;
-        private boolean hovered = false;
         private boolean duplicate = false;
 
         public BindingEntry(CommandBinding binding) {
@@ -111,23 +110,17 @@ public final class BindingsListWidget extends ElementListWidget<BindingsListWidg
             int y = getY();
             int height = getHeight();
 
-            if (mouseX > x - 5 && mouseX < x + 123 && mouseY > y && mouseY < y + 20) {
+            if (hovered || inputField.isFocused()) {
                 inputField.setX(x - 4);
-                inputField.setY(y + 2);
+                inputField.setY(y + 4);
                 inputField.setWidth(textWidth);
                 inputField.setTooltip(tooltip);
                 inputField.setEditable(isClient);
                 inputField.render(context, mouseX, mouseY, delta);
-                if (!this.hovered && inputField.isFocused()) {
-                    inputField.setFocused(false);
-                    inputField.setCursorToStart(false);
-                }
-                this.hovered = true;
             } else {
                 int yPosition = y + height / 2 - 2;
                 String text = cutString(binding.command, textRenderer, textWidth - 12);
                 context.drawTextWithShadow(textRenderer, text, x, yPosition, Colors.WHITE);
-                this.hovered = false;
             }
 
             editButton.setTooltip(tooltip);
