@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public final class ConfigLoader {
@@ -27,14 +28,14 @@ public final class ConfigLoader {
                 file.createNewFile();
             } catch (IOException ignored) {
             }
-            return null;
+            return Collections.emptyList();
         }
         try (FileInputStream stream = new FileInputStream(file)) {
             byte[] contentBytes = stream.readAllBytes();
             String content = new String(contentBytes, StandardCharsets.UTF_8);
             return decode(content);
         } catch (Exception ignored) {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -60,8 +61,6 @@ public final class ConfigLoader {
         String[] lines = input.split("\n");
         List<ConfigEntry> data = new ArrayList<>();
         for (String line : lines) {
-            if (line.isEmpty()) continue;
-
             String[] parts = line.split("=\"");
             if (parts.length != 2) continue;
 

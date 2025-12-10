@@ -23,18 +23,13 @@ public final class Config {
     }
 
     public static void load() {
-        List<ConfigEntry> data = loader.read();
-        if (data == null) {
-            save(true);
-            return;
-        }
-        clientBindings = new ArrayList<>(fromEntries(data));
+        clientBindings = fromEntries(loader.read());
+        if (clientBindings.isEmpty()) save(true);
     }
 
     public static void loadWorldConfig(Path path) {
         if (path == null) return;
         List<ConfigEntry> data = new ConfigLoader(path.toFile()).read();
-        if (data == null) return;
         serverBindings = fromEntries(data, BindSource.WORLD);
     }
 

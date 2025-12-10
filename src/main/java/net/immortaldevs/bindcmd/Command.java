@@ -47,7 +47,7 @@ public final class Command {
         try {
             int offset = Integer.parseInt(command.substring(1));
             var history = getChatHistory();
-            if (history == null || offset < 0 || offset >= history.size()) {
+            if (history.isEmpty() || offset < 0 || offset >= history.size()) {
                 return "";
             }
             return history.get(history.size() - 1 - offset);
@@ -58,9 +58,9 @@ public final class Command {
 
     private ArrayListDeque<String> getChatHistory() {
         var inGameHud = MinecraftClient.getInstance().inGameHud;
-        if (inGameHud == null) return null;
+        if (inGameHud == null) return new ArrayListDeque<>();
         var chatHud = inGameHud.getChatHud();
-        if (chatHud == null) return null;
+        if (chatHud == null) return new ArrayListDeque<>();
         return chatHud.getMessageHistory();
     }
 
@@ -184,7 +184,7 @@ public final class Command {
                     case "max" -> result = max(operand, stack.removeLast());
                     case "floor" -> result = floor(operand);
                     case "ceil" -> result = ceil(operand);
-                    case "round" -> result = (double) round(operand);
+                    case "round" -> result = round(operand);
                     case "sqrt" -> result = sqrt(operand);
                     case "cbrt" -> result = cbrt(operand);
                     case "abs" -> result = abs(operand);

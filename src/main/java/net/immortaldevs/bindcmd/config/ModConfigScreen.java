@@ -16,16 +16,28 @@ import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public final class ModConfigScreen extends GameOptionsScreen {
-    public KeyBinding selectedKeyBinding;
+    private KeyBinding selectedKeyBinding;
     private BindingsListWidget bindingsList;
 
     public ModConfigScreen(Screen parent) {
         super(parent, null, Text.translatable("text.bindcmd.config.title"));
     }
 
+    public void setSelectedBinding(CommandBinding binding) {
+        selectedKeyBinding = binding.getKey();
+    }
+
+    public KeyBinding getSelectedKeyBinding() {
+        return selectedKeyBinding;
+    }
+
+    public void clearSelectedBinding() {
+        selectedKeyBinding = null;
+    }
+
     @Override
     protected void initBody() {
-        this.bindingsList = this.layout.addBody(new BindingsListWidget(this, this.client));
+        bindingsList = layout.addBody(new BindingsListWidget(this, client));
     }
 
     @Override
@@ -34,35 +46,35 @@ public final class ModConfigScreen extends GameOptionsScreen {
 
     @Override
     protected void initHeader() {
-        this.layout.addHeader(new TextWidget(Text.translatable("text.bindcmd.config.title"), this.textRenderer));
+        layout.addHeader(new TextWidget(Text.translatable("text.bindcmd.config.title"), textRenderer));
     }
 
     @Override
     protected void initFooter() {
-        ButtonWidget addButton = ButtonWidget.builder(Text.translatable("text.bindcmd.config.add_command"), button -> this.addButtonPressed()).build();
-        ButtonWidget doneButton = ButtonWidget.builder(ScreenTexts.DONE, button -> this.doneButtonPressed()).build();
+        ButtonWidget addButton = ButtonWidget.builder(Text.translatable("text.bindcmd.config.add_command"), button -> addButtonPressed()).build();
+        ButtonWidget doneButton = ButtonWidget.builder(ScreenTexts.DONE, button -> doneButtonPressed()).build();
 
-        DirectionalLayoutWidget footer = this.layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(8));
+        DirectionalLayoutWidget footer = layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(8));
         footer.add(addButton);
         footer.add(doneButton);
     }
 
     @Override
     protected void refreshWidgetPositions() {
-        this.layout.refreshPositions();
-        this.bindingsList.position(this.width, this.layout);
+        layout.refreshPositions();
+        bindingsList.position(width, layout);
     }
 
     @Override
     public boolean mouseClicked(Click click, boolean doubled) {
-        if (this.selectedKeyBinding != null) {
+        if (selectedKeyBinding != null) {
             for (CommandBinding binding : Config.getBindings()) {
-                if (binding.getKey() == this.selectedKeyBinding) {
+                if (binding.getKey() == selectedKeyBinding) {
                     binding.setBoundMouse(click.button());
                 }
             }
-            this.selectedKeyBinding = null;
-            this.bindingsList.update();
+            clearSelectedBinding();
+            bindingsList.update();
             return true;
         }
         return super.mouseClicked(click, doubled);
@@ -70,14 +82,14 @@ public final class ModConfigScreen extends GameOptionsScreen {
 
     @Override
     public boolean keyPressed(KeyInput input) {
-        if (this.selectedKeyBinding != null) {
+        if (selectedKeyBinding != null) {
             for (CommandBinding binding : Config.getBindings()) {
-                if (binding.getKey() == this.selectedKeyBinding) {
+                if (binding.getKey() == selectedKeyBinding) {
                     binding.setBoundKey(input);
                 }
             }
-            this.selectedKeyBinding = null;
-            this.bindingsList.update();
+            clearSelectedBinding();
+            bindingsList.update();
             return true;
         }
         return super.keyPressed(input);
@@ -85,14 +97,14 @@ public final class ModConfigScreen extends GameOptionsScreen {
 
     private void doneButtonPressed() {
         Config.save();
-        if (this.client == null) return;
-        this.client.setScreen(this.parent);
+        if (client == null) return;
+        client.setScreen(parent);
     }
 
     private void addButtonPressed() {
         CommandBinding binding = new CommandBinding("/");
         Config.add(binding);
-        this.bindingsList.addBinding(binding);
-        this.bindingsList.update();
+        bindingsList.addBinding(binding);
+        bindingsList.update();
     }
 }

@@ -31,21 +31,21 @@ public final class BindingsListWidget extends ElementListWidget<BindingsListWidg
         super(client, parent.width, parent.layout.getContentHeight(), parent.layout.getHeaderHeight(), 20);
         this.parent = parent;
         for (CommandBinding binding : Config.getBindings()) {
-            this.addEntry(new BindingEntry(binding));
+            addEntry(new BindingEntry(binding));
         }
     }
 
     public void update() {
         KeyBinding.updateKeysByCode();
-        this.updateChildren();
+        updateChildren();
     }
 
     public void addBinding(CommandBinding binding) {
-        this.addEntry(new BindingEntry(binding));
+        addEntry(new BindingEntry(binding));
     }
 
     private void updateChildren() {
-        for (BindingEntry entry : this.children()) {
+        for (BindingEntry entry : children()) {
             entry.update();
         }
     }
@@ -71,13 +71,13 @@ public final class BindingsListWidget extends ElementListWidget<BindingsListWidg
 
         public BindingEntry(CommandBinding binding) {
             this.binding = binding;
-            this.editButton = ButtonWidget.builder(Text.empty(), button -> this.editButtonPressed())
+            editButton = ButtonWidget.builder(Text.empty(), button -> editButtonPressed())
                     .dimensions(0, 0, 75, 20)
                     .build();
-            this.deleteButton = ButtonWidget.builder(Text.translatable("text.bindcmd.config.remove"), button -> this.deleteButtonPressed())
+            deleteButton = ButtonWidget.builder(Text.translatable("text.bindcmd.config.remove"), button -> deleteButtonPressed())
                     .dimensions(0, 0, 50, 20)
                     .build();
-            this.inputField = new TextFieldWidget(
+            inputField = new TextFieldWidget(
                     MinecraftClient.getInstance().textRenderer,
                     0,
                     0,
@@ -85,132 +85,132 @@ public final class BindingsListWidget extends ElementListWidget<BindingsListWidg
                     16,
                     binding.getKey().getBoundKeyLocalizedText()
             );
-            this.inputField.setChangedListener(this::inputFieldChanged);
-            this.inputField.setMaxLength(256);
-            this.inputField.setText(binding.command);
-            this.update();
+            inputField.setChangedListener(this::inputFieldChanged);
+            inputField.setMaxLength(256);
+            inputField.setText(binding.command);
+            update();
         }
 
         private void inputFieldChanged(String text) {
-            this.binding.command = text;
+            binding.command = text;
         }
 
         @Override
         public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float delta) {
             TextRenderer textRenderer = BindingsListWidget.this.client.textRenderer;
-            int textWidth = this.getWidth() - this.editButton.getWidth() - this.deleteButton.getWidth() - 3;
-            boolean isClient = this.binding.getSource() == BindSource.CLIENT;
+            int textWidth = getWidth() - editButton.getWidth() - deleteButton.getWidth() - 3;
+            boolean isClient = binding.getSource() == BindSource.CLIENT;
             Tooltip tooltip = null;
-            if (this.binding.getSource() == BindSource.SERVER) {
+            if (binding.getSource() == BindSource.SERVER) {
                 tooltip = serverBindingTooltip;
-            } else if (this.binding.getSource() == BindSource.WORLD) {
+            } else if (binding.getSource() == BindSource.WORLD) {
                 tooltip = worldBindingTooltip;
             }
 
-            int x = this.getX();
-            int y = this.getY();
-            int height = this.getHeight();
+            int x = getX();
+            int y = getY();
+            int height = getHeight();
 
             if (mouseX > x - 5 && mouseX < x + 123 && mouseY > y && mouseY < y + 20) {
-                this.inputField.setX(x - 4);
-                this.inputField.setY(y + 2);
-                this.inputField.setWidth(textWidth);
-                this.inputField.setTooltip(tooltip);
-                this.inputField.setEditable(isClient);
-                this.inputField.render(context, mouseX, mouseY, delta);
-                if (!this.hovered && this.inputField.isFocused()) {
-                    this.inputField.setFocused(false);
-                    this.inputField.setCursorToStart(false);
+                inputField.setX(x - 4);
+                inputField.setY(y + 2);
+                inputField.setWidth(textWidth);
+                inputField.setTooltip(tooltip);
+                inputField.setEditable(isClient);
+                inputField.render(context, mouseX, mouseY, delta);
+                if (!this.hovered && inputField.isFocused()) {
+                    inputField.setFocused(false);
+                    inputField.setCursorToStart(false);
                 }
                 this.hovered = true;
             } else {
                 int yPosition = y + height / 2 - 2;
-                String text = this.cutString(this.binding.command, textRenderer, textWidth - 12);
+                String text = cutString(binding.command, textRenderer, textWidth - 12);
                 context.drawTextWithShadow(textRenderer, text, x, yPosition, Colors.WHITE);
                 this.hovered = false;
             }
 
-            this.editButton.setTooltip(tooltip);
-            this.editButton.active = isClient;
-            this.editButton.setX(x + this.getWidth() - this.editButton.getWidth() - this.deleteButton.getWidth() - 2);
-            this.editButton.setY(y);
+            editButton.setTooltip(tooltip);
+            editButton.active = isClient;
+            editButton.setX(x + getWidth() - editButton.getWidth() - deleteButton.getWidth() - 2);
+            editButton.setY(y);
 
-            this.deleteButton.setTooltip(tooltip);
-            this.deleteButton.active = isClient;
-            this.deleteButton.setX(x + this.getWidth() - this.deleteButton.getWidth());
-            this.deleteButton.setY(y);
-            this.deleteButton.render(context, mouseX, mouseY, delta);
+            deleteButton.setTooltip(tooltip);
+            deleteButton.active = isClient;
+            deleteButton.setX(x + getWidth() - deleteButton.getWidth());
+            deleteButton.setY(y);
+            deleteButton.render(context, mouseX, mouseY, delta);
 
-            if (this.duplicate) {
-                int j = this.editButton.getX() - 6;
+            if (duplicate) {
+                int j = editButton.getX() - 6;
                 context.fill(j, y + 2, j + 3, y + height + 2, 0xFFFF0000);
             }
 
-            this.editButton.render(context, mouseX, mouseY, delta);
+            editButton.render(context, mouseX, mouseY, delta);
         }
 
         @Override
         public List<? extends Element> children() {
             List<Element> list = new ArrayList<>();
-            list.add(this.editButton);
-            list.add(this.deleteButton);
-            list.add(this.inputField);
+            list.add(editButton);
+            list.add(deleteButton);
+            list.add(inputField);
             return list;
         }
 
         @Override
         public List<? extends Selectable> selectableChildren() {
             List<Selectable> list = new ArrayList<>();
-            list.add(this.editButton);
-            list.add(this.deleteButton);
-            list.add(this.inputField);
+            list.add(editButton);
+            list.add(deleteButton);
+            list.add(inputField);
             return list;
         }
 
         public void update() {
-            this.editButton.setMessage(this.binding.getKey().getBoundKeyLocalizedText());
-            this.duplicate = false;
+            editButton.setMessage(binding.getKey().getBoundKeyLocalizedText());
+            duplicate = false;
 
             Text mutableText = Text.empty();
-            if (!this.binding.getKey().isUnbound()) {
+            if (!binding.getKey().isUnbound()) {
                 KeyBinding[] allKeys = BindingsListWidget.this.client.options.allKeys;
                 for (KeyBinding keyBinding : allKeys) {
-                    if (keyBinding != this.binding.getKey() && this.binding.getKey().equals(keyBinding)) {
-                        if (this.duplicate) {
+                    if (keyBinding != binding.getKey() && binding.getKey().equals(keyBinding)) {
+                        if (duplicate) {
                             mutableText = mutableText.copy().append(", ");
                         }
-                        this.duplicate = true;
+                        duplicate = true;
                         mutableText = mutableText.copy().append(keyBinding.getBoundKeyLocalizedText());
                     }
                 }
             }
 
-            if (this.duplicate) {
-                Text key = this.editButton.getMessage().copy().formatted(Formatting.WHITE);
+            if (duplicate) {
+                Text key = editButton.getMessage().copy().formatted(Formatting.WHITE);
                 Text tooltip = Text.translatable("controls.keybinds.duplicateKeybinds", mutableText);
-                this.editButton.setMessage(Text.literal("[ ").append(key).append(" ]").formatted(Formatting.RED));
-                this.editButton.setTooltip(Tooltip.of(tooltip));
+                editButton.setMessage(Text.literal("[ ").append(key).append(" ]").formatted(Formatting.RED));
+                editButton.setTooltip(Tooltip.of(tooltip));
             } else {
-                this.editButton.setTooltip(null);
+                editButton.setTooltip(null);
             }
 
-            if (BindingsListWidget.this.parent.selectedKeyBinding == this.binding.getKey()) {
-                Text key = this.editButton.getMessage().copy().formatted(Formatting.WHITE, Formatting.UNDERLINE);
-                this.editButton.setMessage(Text.literal("> ").append(key).append(" <").formatted(Formatting.YELLOW));
+            if (BindingsListWidget.this.parent.getSelectedKeyBinding() == binding.getKey()) {
+                Text key = editButton.getMessage().copy().formatted(Formatting.WHITE, Formatting.UNDERLINE);
+                editButton.setMessage(Text.literal("> ").append(key).append(" <").formatted(Formatting.YELLOW));
             }
         }
 
         private void editButtonPressed() {
-            BindingsListWidget.this.parent.selectedKeyBinding = this.binding.getKey();
+            BindingsListWidget.this.parent.setSelectedBinding(binding);
             BindingsListWidget.this.update();
         }
 
         private void deleteButtonPressed() {
-            this.binding.unbind();
-            Config.remove(this.binding);
+            binding.unbind();
+            Config.remove(binding);
 
             BindingsListWidget list = BindingsListWidget.this;
-            list.parent.selectedKeyBinding = null;
+            list.parent.clearSelectedBinding();
             list.removeEntry(this);
             list.setScrollY(list.getScrollY() - 20);
             list.update();

@@ -10,8 +10,10 @@ import net.immortaldevs.bindcmd.config.ConfigLoader;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+import java.util.List;
+
 public final class BindCmdServer implements DedicatedServerModInitializer {
-    private static java.util.List<ConfigEntry> bindings = java.util.List.of();
+    private static List<ConfigEntry> bindings = List.of();
 
     @Override
     public void onInitializeServer() {
@@ -21,8 +23,7 @@ public final class BindCmdServer implements DedicatedServerModInitializer {
 
         ServerLifecycleEvents.SERVER_STARTED.register((MinecraftServer minecraftServer) -> {
             ConfigLoader loader = new ConfigLoader(minecraftServer.getRunDirectory().toFile());
-            java.util.List<ConfigEntry> data = loader.read();
-            bindings = data != null ? data : java.util.List.of();
+            bindings = loader.read();
         });
 
         ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {

@@ -35,10 +35,6 @@ public class CommandBinding {
         this.key = new KeyBinding(translationKey, type, keyCode, CATEGORY);
     }
 
-    public CommandBinding(String command, String translationKey) {
-        this(command, translationKey, BindSource.CLIENT);
-    }
-
     public KeyBinding getKey() {
         return this.key;
     }
@@ -56,19 +52,19 @@ public class CommandBinding {
     }
 
     public boolean isPressed() {
-        return this.key.isPressed();
+        return key.isPressed();
     }
 
     public void setBoundKey(KeyInput keyInput) {
         unbind();
-        InputUtil.Key key = keyInput.isEscape() ? InputUtil.UNKNOWN_KEY : InputUtil.fromKeyCode(keyInput);
-        this.key = new KeyBinding(key.getTranslationKey(), key.getCode(), CATEGORY);
+        InputUtil.Key inpuKey = keyInput.isEscape() ? InputUtil.UNKNOWN_KEY : InputUtil.fromKeyCode(keyInput);
+        key = new KeyBinding(inpuKey.getTranslationKey(), inpuKey.getCode(), CATEGORY);
     }
 
     public void setBoundMouse(int button) {
         unbind();
-        InputUtil.Key key = InputUtil.Type.MOUSE.createFromCode(button);
-        this.key = new KeyBinding(key.getTranslationKey(), InputUtil.Type.MOUSE, key.getCode(), CATEGORY);
+        InputUtil.Key inpuKey = InputUtil.Type.MOUSE.createFromCode(button);
+        key = new KeyBinding(inpuKey.getTranslationKey(), InputUtil.Type.MOUSE, inpuKey.getCode(), CATEGORY);
     }
 
     public void unbind() {
