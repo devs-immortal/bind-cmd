@@ -1,33 +1,34 @@
 package net.immortaldevs.bindcmd.config;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.immortaldevs.bindcmd.BindSource;
 import net.immortaldevs.bindcmd.CommandBinding;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ElementListWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.text.Text;
-import net.minecraft.util.Colors;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.ContainerObjectSelectionList;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import org.jspecify.annotations.NonNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Environment(EnvType.CLIENT)
-public final class BindingsListWidget extends ElementListWidget<BindingsListWidget.BindingEntry> {
+public final class BindingsListWidget extends ContainerObjectSelectionList<BindingsListWidget.BindingEntry> {
     final ModConfigScreen parent;
-    private final Tooltip serverBindingTooltip = Tooltip.of(Text.translatable("text.bindcmd.config.server_setting"));
-    private final Tooltip worldBindingTooltip = Tooltip.of(Text.translatable("text.bindcmd.config.world_setting"));
+    private final Tooltip serverBindingTooltip = Tooltip.create(Component.translatable("text.bindcmd.config.server_setting"));
+    private final Tooltip worldBindingTooltip = Tooltip.create(Component.translatable("text.bindcmd.config.world_setting"));
 
-    public BindingsListWidget(ModConfigScreen parent, MinecraftClient client) {
+    public BindingsListWidget(ModConfigScreen parent, Minecraft client) {
         super(client, parent.width, parent.layout.getContentHeight(), parent.layout.getHeaderHeight(), 20);
         this.parent = parent;
         for (CommandBinding binding : Config.getBindings()) {
@@ -36,7 +37,7 @@ public final class BindingsListWidget extends ElementListWidget<BindingsListWidg
     }
 
     public void update() {
-        KeyBinding.updateKeysByCode();
+        KeyMapping.resetMapping();
         updateChildren();
     }
 
@@ -51,8 +52,8 @@ public final class BindingsListWidget extends ElementListWidget<BindingsListWidg
     }
 
     @Override
-    public int getScrollbarX() {
-        return super.getScrollbarX() + 15;
+    public int scrollBarX() {
+        return super.scrollBarX() + 15;
     }
 
     @Override
@@ -63,30 +64,30 @@ public final class BindingsListWidget extends ElementListWidget<BindingsListWidg
     @Environment(EnvType.CLIENT)
     public class BindingEntry extends Entry<BindingEntry> {
         private final CommandBinding binding;
-        private final ButtonWidget editButton;
-        private final ButtonWidget deleteButton;
-        private final TextFieldWidget inputField;
+        private final Button editButton;
+        private final Button deleteButton;
+        private final EditBox inputField;
         private boolean duplicate = false;
 
         public BindingEntry(CommandBinding binding) {
             this.binding = binding;
-            editButton = ButtonWidget.builder(Text.empty(), button -> editButtonPressed())
-                    .dimensions(0, 0, 75, 20)
+            editButton = Button.builder(Component.empty(), button -> editButtonPressed())
+                    .bounds(0, 0, 75, 20)
                     .build();
-            deleteButton = ButtonWidget.builder(Text.translatable("text.bindcmd.config.remove"), button -> deleteButtonPressed())
-                    .dimensions(0, 0, 50, 20)
+            deleteButton = Button.builder(Component.translatable("text.bindcmd.config.remove"), button -> deleteButtonPressed())
+                    .bounds(0, 0, 50, 20)
                     .build();
-            inputField = new TextFieldWidget(
-                    MinecraftClient.getInstance().textRenderer,
+            inputField = new EditBox(
+                    Minecraft.getInstance().font,
                     0,
                     0,
                     124,
                     16,
-                    binding.getKey().getBoundKeyLocalizedText()
+                    binding.getKey().getTranslatedKeyMessage()
             );
-            inputField.setChangedListener(this::inputFieldChanged);
+            inputField.setResponder(this::inputFieldChanged);
             inputField.setMaxLength(256);
-            inputField.setText(binding.command);
+            inputField.setValue(binding.command);
             update();
         }
 
@@ -95,8 +96,8 @@ public final class BindingsListWidget extends ElementListWidget<BindingsListWidg
         }
 
         @Override
-        public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float delta) {
-            TextRenderer textRenderer = BindingsListWidget.this.client.textRenderer;
+        public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float delta) {
+            Font font = BindingsListWidget.this.minecraft.font;
             int textWidth = getWidth() - editButton.getWidth() - deleteButton.getWidth() - 3;
             boolean isClient = binding.getSource() == BindSource.CLIENT;
             Tooltip tooltip = null;
@@ -116,11 +117,11 @@ public final class BindingsListWidget extends ElementListWidget<BindingsListWidg
                 inputField.setWidth(textWidth);
                 inputField.setTooltip(tooltip);
                 inputField.setEditable(isClient);
-                inputField.render(context, mouseX, mouseY, delta);
+                inputField.render(graphics, mouseX, mouseY, delta);
             } else {
                 int yPosition = y + height / 2 - 2;
-                String text = cutString(binding.command, textRenderer, textWidth - 12);
-                context.drawTextWithShadow(textRenderer, text, x, yPosition, Colors.WHITE);
+                String text = cutString(binding.command, font, textWidth - 12);
+                graphics.drawString(font, text, x, yPosition, -1);
             }
 
             editButton.setTooltip(tooltip);
@@ -132,64 +133,57 @@ public final class BindingsListWidget extends ElementListWidget<BindingsListWidg
             deleteButton.active = isClient;
             deleteButton.setX(x + getWidth() - deleteButton.getWidth());
             deleteButton.setY(y);
-            deleteButton.render(context, mouseX, mouseY, delta);
+            deleteButton.render(graphics, mouseX, mouseY, delta);
 
             if (duplicate) {
                 int j = editButton.getX() - 6;
-                context.fill(j, y + 2, j + 3, y + height + 2, 0xFFFF0000);
+                graphics.fill(j, y + 2, j + 3, y + height + 2, 0xFFFF0000);
             }
 
-            editButton.render(context, mouseX, mouseY, delta);
+            editButton.render(graphics, mouseX, mouseY, delta);
         }
 
         @Override
-        public List<? extends Element> children() {
-            List<Element> list = new ArrayList<>();
-            list.add(editButton);
-            list.add(deleteButton);
-            list.add(inputField);
-            return list;
+        public @NonNull List<? extends GuiEventListener> children() {
+            return ImmutableList.of(editButton, deleteButton, inputField);
         }
 
         @Override
-        public List<? extends Selectable> selectableChildren() {
-            List<Selectable> list = new ArrayList<>();
-            list.add(editButton);
-            list.add(deleteButton);
-            list.add(inputField);
-            return list;
+        public @NonNull List<? extends NarratableEntry> narratables() {
+            return ImmutableList.of(editButton, deleteButton, inputField);
         }
 
         public void update() {
-            editButton.setMessage(binding.getKey().getBoundKeyLocalizedText());
+            editButton.setMessage(binding.getKey().getTranslatedKeyMessage());
             duplicate = false;
 
-            Text mutableText = Text.empty();
+            MutableComponent tooltip = Component.empty();
             if (!binding.getKey().isUnbound()) {
-                KeyBinding[] allKeys = BindingsListWidget.this.client.options.allKeys;
-                for (KeyBinding keyBinding : allKeys) {
+                KeyMapping[] allKeys = BindingsListWidget.this.minecraft.options.keyMappings;
+                for (KeyMapping keyBinding : allKeys) {
                     if (keyBinding != binding.getKey() && binding.getKey().equals(keyBinding)) {
                         if (duplicate) {
-                            mutableText = mutableText.copy().append(", ");
+                            tooltip.append(", ");
                         }
+
                         duplicate = true;
-                        mutableText = mutableText.copy().append(keyBinding.getBoundKeyLocalizedText());
+                        tooltip.append(keyBinding.getTranslatedKeyMessage());
                     }
                 }
             }
 
             if (duplicate) {
-                Text key = editButton.getMessage().copy().formatted(Formatting.WHITE);
-                Text tooltip = Text.translatable("controls.keybinds.duplicateKeybinds", mutableText);
-                editButton.setMessage(Text.literal("[ ").append(key).append(" ]").formatted(Formatting.RED));
-                editButton.setTooltip(Tooltip.of(tooltip));
+                Component key = editButton.getMessage().copy().withStyle(ChatFormatting.WHITE);
+                Component text = Component.translatable("controls.keybinds.duplicateKeybinds", tooltip);
+                editButton.setMessage(Component.literal("[ ").append(key).append(" ]").withStyle(ChatFormatting.YELLOW));
+                editButton.setTooltip(Tooltip.create(text));
             } else {
                 editButton.setTooltip(null);
             }
 
-            if (BindingsListWidget.this.parent.getSelectedKeyBinding() == binding.getKey()) {
-                Text key = editButton.getMessage().copy().formatted(Formatting.WHITE, Formatting.UNDERLINE);
-                editButton.setMessage(Text.literal("> ").append(key).append(" <").formatted(Formatting.YELLOW));
+            if (BindingsListWidget.this.parent.getSelectedKeyMapping() == binding.getKey()) {
+                Component key = editButton.getMessage().copy().withStyle(ChatFormatting.WHITE, ChatFormatting.UNDERLINE);
+                editButton.setMessage(Component.literal("> ").append(key).append(" <").withStyle(ChatFormatting.YELLOW));
             }
         }
 
@@ -205,19 +199,19 @@ public final class BindingsListWidget extends ElementListWidget<BindingsListWidg
             BindingsListWidget list = BindingsListWidget.this;
             list.parent.clearSelectedBinding();
             list.removeEntry(this);
-            list.setScrollY(list.getScrollY() - 20);
+            list.setScrollAmount(list.scrollAmount() - 20);
             list.update();
         }
 
-        private String cutString(String text, TextRenderer textRenderer, int maxWidth) {
-            int width = textRenderer.getWidth(text);
+        private String cutString(String text, Font font, int maxWidth) {
+            int width = font.width(text);
             if (width <= maxWidth) {
                 return text;
             }
             int len = text.length();
             while (width > maxWidth && len > 0) {
                 len--;
-                width = textRenderer.getWidth(text.substring(0, len));
+                width = font.width(text.substring(0, len));
             }
             return text.substring(0, len) + "…";
         }

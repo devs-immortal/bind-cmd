@@ -7,7 +7,7 @@
   ],
   "server": [
     "MinecraftServerMixin",
-    "ServerWorldServerEntityHandlerMixin"
+    "ServerLevelServerEntityHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

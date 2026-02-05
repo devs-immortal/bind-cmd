@@ -4,10 +4,7 @@ pluginManagement {
             name = 'Fabric'
             url = 'https://maven.fabricmc.net/'
         }
+        mavenCentral()
         gradlePluginPortal()
-    }
-
-    plugins {
-        id 'fabric-loom' version loom_version
     }
 }

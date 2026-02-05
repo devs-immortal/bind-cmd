@@ -1,41 +1,41 @@
 package net.immortaldevs.bindcmd;
 
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.util.Identifier;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.resources.Identifier;
 
 public class CommandBinding {
-    private static final KeyBinding.Category CATEGORY = new KeyBinding.Category(
-            Identifier.of("bindcmd", "category")
+    private static final KeyMapping.Category CATEGORY = new KeyMapping.Category(
+            Identifier.fromNamespaceAndPath("bindcmd", "category")
     );
 
     public boolean wasPressed = false;
     public String command;
 
     private BindSource source = BindSource.CLIENT;
-    private KeyBinding key;
+    private KeyMapping key;
 
-    public CommandBinding(String command, KeyBinding key) {
+    public CommandBinding(String command, KeyMapping key) {
         this.command = command;
         this.key = key;
     }
 
     public CommandBinding(String command) {
-        this(command, new KeyBinding("key.keyboard.unknown", -1, CATEGORY));
+        this(command, new KeyMapping("key.keyboard.unknown", -1, CATEGORY));
     }
 
     public CommandBinding(String command, String translationKey, BindSource source) {
         this(command);
         this.command = command;
         this.source = source;
-        InputUtil.Key keyFromTranslation = InputUtil.fromTranslationKey(translationKey);
-        int keyCode = keyFromTranslation.getCode();
-        InputUtil.Type type = translationKey.startsWith("key.mouse") ? InputUtil.Type.MOUSE : InputUtil.Type.KEYSYM;
-        this.key = new KeyBinding(translationKey, type, keyCode, CATEGORY);
+        InputConstants.Key keyFromTranslation = InputConstants.getKey(translationKey);
+        int keyCode = keyFromTranslation.getValue();
+        InputConstants.Type type = translationKey.startsWith("key.mouse") ? InputConstants.Type.MOUSE : InputConstants.Type.KEYSYM;
+        this.key = new KeyMapping(translationKey, type, keyCode, CATEGORY);
     }
 
-    public KeyBinding getKey() {
+    public KeyMapping getKey() {
         return this.key;
     }
 
@@ -44,7 +44,7 @@ public class CommandBinding {
     }
 
     public String getTranslationKey() {
-        return this.key.getBoundKeyTranslationKey();
+        return this.key.saveString();
     }
 
     public boolean isUnknown() {
@@ -52,23 +52,23 @@ public class CommandBinding {
     }
 
     public boolean isPressed() {
-        return key.isPressed();
+        return key.isDown();
     }
 
-    public void setBoundKey(KeyInput keyInput) {
+    public void setBoundKey(KeyEvent keyInput) {
         unbind();
-        InputUtil.Key inpuKey = keyInput.isEscape() ? InputUtil.UNKNOWN_KEY : InputUtil.fromKeyCode(keyInput);
-        key = new KeyBinding(inpuKey.getTranslationKey(), inpuKey.getCode(), CATEGORY);
+        InputConstants.Key inpuKey = keyInput.isEscape() ? InputConstants.UNKNOWN : InputConstants.getKey(keyInput);
+        key = new KeyMapping(inpuKey.getName(), inpuKey.getValue(), CATEGORY);
     }
 
     public void setBoundMouse(int button) {
         unbind();
-        InputUtil.Key inpuKey = InputUtil.Type.MOUSE.createFromCode(button);
-        key = new KeyBinding(inpuKey.getTranslationKey(), InputUtil.Type.MOUSE, inpuKey.getCode(), CATEGORY);
+        InputConstants.Key inpuKey = InputConstants.Type.MOUSE.getOrCreate(button);
+        key = new KeyMapping(inpuKey.getName(), InputConstants.Type.MOUSE, inpuKey.getValue(), CATEGORY);
     }
 
     public void unbind() {
-        KeyBinding.KEYS_BY_ID.remove(getTranslationKey());
-        KeyBinding.updateKeysByCode();
+        KeyMapping.ALL.remove(getTranslationKey());
+        KeyMapping.resetMapping();
     }
 }

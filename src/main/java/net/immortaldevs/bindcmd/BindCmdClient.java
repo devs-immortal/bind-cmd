@@ -6,7 +6,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.immortaldevs.bindcmd.config.Config;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 public final class BindCmdClient implements ClientModInitializer {
     private static long lastKeyPress = 0L;
@@ -14,27 +14,26 @@ public final class BindCmdClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        PayloadTypeRegistry.playS2C().register(
-                ConfigS2CPayload.ID, ConfigS2CPayload.CODEC
-        );
+        PayloadTypeRegistry.clientboundPlay().register(ConfigPayload.ID, ConfigPayload.CODEC);
+        PayloadTypeRegistry.clientboundConfiguration().register(ConfigPayload.ID, ConfigPayload.CODEC);
 
         Config.load();
 
         ClientTickEvents.END_CLIENT_TICK.register(BindCmdClient::onEndClientTick);
-        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> onPlayerJoin(client));
-        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> onPlayerDisconnect());
+        ClientPlayConnectionEvents.JOIN.register((_, _, client) -> onPlayerJoin(client));
+        ClientPlayConnectionEvents.DISCONNECT.register((_, _) -> onPlayerDisconnect());
 
         ClientPlayNetworking.registerGlobalReceiver(
-                ConfigS2CPayload.ID,
-                (payload, context) -> Config.setServerBindings(payload.config())
+                ConfigPayload.ID,
+                (payload, _) -> Config.setServerBindings(payload.config())
         );
     }
 
-    private static void onPlayerJoin(MinecraftClient client) {
+    private static void onPlayerJoin(Minecraft client) {
         Config.clearServerBindings();
-        if (client.getServer() != null && client.getServer().isSingleplayer()) {
-            var server = client.getServer();
-            var dir = server.session.getDirectory().path();
+        if (client.getSingleplayerServer() != null && client.getSingleplayerServer().isSingleplayer()) {
+            var server = client.getSingleplayerServer();
+            var dir = server.storageSource.getLevelDirectory().path();
             Config.loadWorldConfig(dir);
         }
     }
@@ -43,15 +42,15 @@ public final class BindCmdClient implements ClientModInitializer {
         Config.clearServerBindings();
     }
 
-    private static void onEndClientTick(MinecraftClient client) {
+    private static void onEndClientTick(Minecraft client) {
         if (System.currentTimeMillis() - lastKeyPress < COOLDOWN) return;
         for (CommandBinding binding : Config.getBindings()) {
             handleBinding(client, binding);
         }
     }
 
-    private static void handleBinding(MinecraftClient client, CommandBinding binding) {
-        var networkHandler = client.getNetworkHandler();
+    private static void handleBinding(Minecraft client, CommandBinding binding) {
+        var networkHandler = client.getConnection();
 
         if (binding.isUnknown() || networkHandler == null) {
             return;
@@ -66,8 +65,8 @@ public final class BindCmdClient implements ClientModInitializer {
             for (String command : commands) {
                 Command cmd = new Command(command);
                 switch (cmd.getType()) {
-                    case COMMAND -> networkHandler.sendChatCommand(cmd.getCommand());
-                    case MESSAGE -> networkHandler.sendChatMessage(cmd.getCommand());
+                    case COMMAND -> networkHandler.sendCommand(cmd.getCommand());
+                    case MESSAGE -> networkHandler.sendChat(cmd.getCommand());
                     case NONE -> {
                         return;
                     }

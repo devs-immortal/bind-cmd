@@ -3,41 +3,41 @@ package net.immortaldevs.bindcmd.config;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.immortaldevs.bindcmd.CommandBinding;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.option.GameOptionsScreen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
-import net.minecraft.client.gui.widget.TextWidget;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.Text;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.layouts.LinearLayout;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.options.OptionsSubScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
+import org.jspecify.annotations.NonNull;
 
 @Environment(EnvType.CLIENT)
-public final class ModConfigScreen extends GameOptionsScreen {
-    private KeyBinding selectedKeyBinding;
+public final class ModConfigScreen extends OptionsSubScreen {
+    private KeyMapping selectedKeyMapping;
     private BindingsListWidget bindingsList;
 
-    public ModConfigScreen(Screen parent) {
-        super(parent, null, Text.translatable("text.bindcmd.config.title"));
+    public ModConfigScreen(Screen lastScreen) {
+        super(lastScreen, null, Component.translatable("text.bindcmd.config.title"));
     }
 
     public void setSelectedBinding(CommandBinding binding) {
-        selectedKeyBinding = binding.getKey();
+        selectedKeyMapping = binding.getKey();
     }
 
-    public KeyBinding getSelectedKeyBinding() {
-        return selectedKeyBinding;
+    public KeyMapping getSelectedKeyMapping() {
+        return selectedKeyMapping;
     }
 
     public void clearSelectedBinding() {
-        selectedKeyBinding = null;
+        selectedKeyMapping = null;
     }
 
     @Override
-    protected void initBody() {
-        bindingsList = layout.addBody(new BindingsListWidget(this, client));
+    protected void addContents() {
+        bindingsList = layout.addToContents(new BindingsListWidget(this, minecraft));
     }
 
     @Override
@@ -45,31 +45,31 @@ public final class ModConfigScreen extends GameOptionsScreen {
     }
 
     @Override
-    protected void initHeader() {
-        layout.addHeader(new TextWidget(Text.translatable("text.bindcmd.config.title"), textRenderer));
+    protected void addTitle() {
+        layout.addTitleHeader(Component.translatable("text.bindcmd.config.title"), font);
     }
 
     @Override
-    protected void initFooter() {
-        ButtonWidget addButton = ButtonWidget.builder(Text.translatable("text.bindcmd.config.add_command"), button -> addButtonPressed()).build();
-        ButtonWidget doneButton = ButtonWidget.builder(ScreenTexts.DONE, button -> doneButtonPressed()).build();
+    protected void addFooter() {
+        Button addButton = Button.builder(Component.translatable("text.bindcmd.config.add_command"), _ -> addButtonPressed()).build();
+        Button doneButton = Button.builder(CommonComponents.GUI_DONE, _ -> doneButtonPressed()).build();
 
-        DirectionalLayoutWidget footer = layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(8));
-        footer.add(addButton);
-        footer.add(doneButton);
+        LinearLayout footer = layout.addToFooter(LinearLayout.horizontal().spacing(8));
+        footer.addChild(addButton);
+        footer.addChild(doneButton);
     }
 
     @Override
-    protected void refreshWidgetPositions() {
-        layout.refreshPositions();
-        bindingsList.position(width, layout);
+    protected void repositionElements() {
+        layout.arrangeElements();
+        bindingsList.updateSize(width, layout);
     }
 
     @Override
-    public boolean mouseClicked(Click click, boolean doubled) {
-        if (selectedKeyBinding != null) {
+    public boolean mouseClicked(@NonNull MouseButtonEvent click, boolean doubled) {
+        if (selectedKeyMapping != null) {
             for (CommandBinding binding : Config.getBindings()) {
-                if (binding.getKey() == selectedKeyBinding) {
+                if (binding.getKey() == selectedKeyMapping) {
                     binding.setBoundMouse(click.button());
                 }
             }
@@ -81,10 +81,10 @@ public final class ModConfigScreen extends GameOptionsScreen {
     }
 
     @Override
-    public boolean keyPressed(KeyInput input) {
-        if (selectedKeyBinding != null) {
+    public boolean keyPressed(@NonNull KeyEvent input) {
+        if (selectedKeyMapping != null) {
             for (CommandBinding binding : Config.getBindings()) {
-                if (binding.getKey() == selectedKeyBinding) {
+                if (binding.getKey() == selectedKeyMapping) {
                     binding.setBoundKey(input);
                 }
             }
@@ -97,8 +97,7 @@ public final class ModConfigScreen extends GameOptionsScreen {
 
     private void doneButtonPressed() {
         Config.save();
-        if (client == null) return;
-        client.setScreen(parent);
+        minecraft.setScreen(lastScreen);
     }
 
     private void addButtonPressed() {

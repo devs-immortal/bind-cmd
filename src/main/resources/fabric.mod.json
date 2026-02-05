@@ -39,9 +39,9 @@
   ],
   "accessWidener": "bindcmd.accesswidener",
   "depends": {
-    "fabric": "*",
+    "fabric-api": ">=0.140.0",
     "fabricloader": ">=0.18.0",
-    "minecraft": ">=1.21.10",
+    "minecraft": ">=26.1-",
     "modmenu": "*"
   }
 }

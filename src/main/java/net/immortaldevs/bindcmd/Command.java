@@ -1,8 +1,8 @@
 package net.immortaldevs.bindcmd;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.util.collection.ArrayListDeque;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.util.ArrayListDeque;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -57,11 +57,9 @@ public final class Command {
     }
 
     private ArrayListDeque<String> getChatHistory() {
-        var inGameHud = MinecraftClient.getInstance().inGameHud;
-        if (inGameHud == null) return new ArrayListDeque<>();
-        var chatHud = inGameHud.getChatHud();
-        if (chatHud == null) return new ArrayListDeque<>();
-        return chatHud.getMessageHistory();
+        var inGameHud = Minecraft.getInstance().gui;
+        var chatHud = inGameHud.getChat();
+        return chatHud.getRecentChat();
     }
 
     private String processMessage(String message) {
@@ -88,15 +86,15 @@ public final class Command {
     }
 
     private String replaceVariables(String expression) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        ClientPlayerEntity player = client.player;
+        Minecraft client = Minecraft.getInstance();
+        LocalPlayer player = client.player;
         if (player == null) return expression;
 
         Map<String, String> variables = Map.of(
                 "username", player.getName().getString(),
                 "maxHealth", String.valueOf(player.getMaxHealth()),
                 "health", String.valueOf(player.getHealth()),
-                "hunger", String.valueOf(player.getHungerManager().getFoodLevel()),
+                "hunger", String.valueOf(player.getFoodData().getFoodLevel()),
                 "x", String.valueOf(player.getBlockX()),
                 "y", String.valueOf(player.getBlockY()),
                 "z", String.valueOf(player.getBlockZ())

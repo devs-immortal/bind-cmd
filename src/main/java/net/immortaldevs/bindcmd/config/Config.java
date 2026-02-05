@@ -2,7 +2,7 @@ package net.immortaldevs.bindcmd.config;
 
 import net.immortaldevs.bindcmd.BindSource;
 import net.immortaldevs.bindcmd.CommandBinding;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 public final class Config {
-    private static final ConfigLoader loader = new ConfigLoader(MinecraftClient.getInstance().runDirectory);
+    private static final ConfigLoader loader = new ConfigLoader(Minecraft.getInstance().gameDirectory);
 
     private static List<CommandBinding> serverBindings = Collections.emptyList();
     private static List<CommandBinding> clientBindings = new ArrayList<>();
