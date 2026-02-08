@@ -88,9 +88,7 @@ public final class Command {
             String evaluated = expression;
             try {
                 String afterVarReplace = replaceVariables(evaluated);
-                String afterEval = evaluateExpression(afterVarReplace);
-
-                evaluated = !afterEval.equals(afterVarReplace) ? afterEval : matcher.group();
+                evaluated = evaluateExpression(afterVarReplace != null ? afterVarReplace : matcher.group());
             } catch (Exception ignored) {
                 evaluated = matcher.group();
             }
@@ -102,9 +100,9 @@ public final class Command {
 
     private String replaceVariables(String expression) {
         MinecraftClient client = MinecraftClient.getInstance();
-        if (client == null) return expression;
+        if (client == null) return null;
         ClientPlayerEntity player = client.player;
-        if (player == null) return expression;
+        if (player == null) return null;
 
         Map<String, String> variables = Map.of(
                 "username", player.getName().getString(),
@@ -116,14 +114,16 @@ public final class Command {
                 "z", String.valueOf(player.getBlockZ())
         );
 
+        String result = expression;
         for (Map.Entry<String, String> entry : variables.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
             if (expression.contains(key)) {
-                return expression.replace(key, value);
+                result = result.replace(key, value);
             }
         }
-        return expression;
+
+        return expression.equals(result) ? null : result;
     }
 
     private String evaluateExpression(String expression) {
