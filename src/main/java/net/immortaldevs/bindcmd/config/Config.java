@@ -5,50 +5,71 @@ import net.immortaldevs.bindcmd.CommandBinding;
 import net.minecraft.client.MinecraftClient;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public final class Config {
     private static final ConfigLoader loader = new ConfigLoader(MinecraftClient.getInstance().runDirectory);
 
-    private static List<CommandBinding> serverBindings = Collections.emptyList();
     private static List<CommandBinding> clientBindings = new ArrayList<>();
+    private static List<CommandBinding> serverBindings = Collections.emptyList();
+
+    private static List<CommandBinding> allBindings = Collections.emptyList();
+    private static Map<String, List<String>> commandsMap = Collections.emptyMap();
 
     public static List<CommandBinding> getBindings() {
-        List<CommandBinding> result = new ArrayList<>(clientBindings.size() + serverBindings.size());
-        result.addAll(clientBindings);
-        result.addAll(serverBindings);
-        return result;
+        return allBindings;
     }
 
     public static List<String> getCommands(String translationKey) {
-        List<String> result = new ArrayList<>();
-        for (CommandBinding binding : getBindings()) {
-            if (binding.getTranslationKey().equals(translationKey)) {
-                result.add(binding.command);
-            }
-        }
-        return result;
+        return commandsMap.getOrDefault(translationKey, Collections.emptyList());
     }
 
     public static void load() {
         clientBindings = fromEntries(loader.read());
         if (clientBindings.isEmpty()) save(true);
+        updateBindings();
     }
 
     public static void loadWorldConfig(Path path) {
         if (path == null) return;
         List<ConfigEntry> data = new ConfigLoader(path.toFile()).read();
         serverBindings = fromEntries(data, BindSource.WORLD);
+        updateBindings();
     }
 
     public static void remove(CommandBinding binding) {
-        clientBindings.remove(binding);
+        if (clientBindings.remove(binding)) {
+            updateBindings();
+        }
     }
 
     public static void add(CommandBinding binding) {
         clientBindings.add(binding);
+        updateBindings();
+    }
+
+    public static void setServerBindings(List<ConfigEntry> data) {
+        serverBindings = fromEntries(data, BindSource.SERVER);
+        updateBindings();
+    }
+
+    public static void clearServerBindings() {
+        serverBindings = Collections.emptyList();
+        updateBindings();
+    }
+
+    private static void updateBindings() {
+        List<CommandBinding> combined = new ArrayList<>(clientBindings.size() + serverBindings.size());
+        combined.addAll(clientBindings);
+        combined.addAll(serverBindings);
+        allBindings = Collections.unmodifiableList(combined);
+
+        Map<String, List<String>> map = new HashMap<>();
+        for (CommandBinding binding : combined) {
+            map.computeIfAbsent(binding.getTranslationKey(), k -> new ArrayList<>())
+                    .add(binding.command);
+        }
+        commandsMap = Collections.unmodifiableMap(map);
     }
 
     public static void save() {
@@ -57,14 +78,6 @@ public final class Config {
 
     public static void save(boolean backup) {
         loader.write(toEntries(clientBindings), backup);
-    }
-
-    public static void setServerBindings(List<ConfigEntry> data) {
-        serverBindings = fromEntries(data, BindSource.SERVER);
-    }
-
-    public static void clearServerBindings() {
-        serverBindings = Collections.emptyList();
     }
 
     private static List<ConfigEntry> toEntries(List<CommandBinding> data) {
