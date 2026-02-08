@@ -1,5 +1,6 @@
 package net.immortaldevs.bindcmd.mixin;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.immortaldevs.bindcmd.Command;
 import net.immortaldevs.bindcmd.config.Config;
 import net.minecraft.client.KeyMapping;
@@ -20,8 +21,8 @@ public abstract class KeyMappingMixin {
     @Unique
     private static final long COOLDOWN = 200L;
 
-    @Inject(method = "onKeyPressed", at = @At("HEAD"))
-    private static void onKeyPressed(InputUtil.Key key, CallbackInfo ci) {
+    @Inject(method = "click", at = @At("HEAD"))
+    private static void click(InputConstants.Key key, CallbackInfo ci) {
         if (System.currentTimeMillis() - lastKeyPress < COOLDOWN) return;
 
         final var client = Minecraft.getInstance();
@@ -29,7 +30,7 @@ public abstract class KeyMappingMixin {
 
         if (networkHandler == null) return;
 
-        final var commands = Config.getCommands(key.());
+        final var commands = Config.getCommands(key.getName());
         handleCommands(commands, networkHandler);
     }
 
