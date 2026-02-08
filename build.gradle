@@ -20,6 +20,9 @@ dependencies {
     modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}") {
         exclude module: "fabric-api"
     }
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.14.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.14.2'
 }
 
 base {
@@ -54,4 +57,13 @@ jar {
 
 loom {
     accessWidenerPath = file("src/main/resources/bindcmd.accesswidener")
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+        showStandardStreams = true
+    }
 }
