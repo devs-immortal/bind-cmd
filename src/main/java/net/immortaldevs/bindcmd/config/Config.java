@@ -66,8 +66,7 @@ public final class Config {
 
         Map<String, List<String>> map = new HashMap<>();
         for (CommandBinding binding : combined) {
-            map.computeIfAbsent(binding.getTranslationKey(), k -> new ArrayList<>())
-                    .add(binding.command);
+            map.computeIfAbsent(binding.getTranslationKey(), k -> new ArrayList<>()).addAll(binding.commands);
         }
         commandsMap = Collections.unmodifiableMap(map);
     }
@@ -81,9 +80,11 @@ public final class Config {
     }
 
     private static List<ConfigEntry> toEntries(List<CommandBinding> data) {
-        List<ConfigEntry> result = new ArrayList<>(data.size());
+        List<ConfigEntry> result = new ArrayList<>();
         for (CommandBinding binding : data) {
-            result.add(new ConfigEntry(binding.getTranslationKey(), binding.command));
+            for (String command : binding.commands) {
+                result.add(new ConfigEntry(binding.getTranslationKey(), command));
+            }
         }
         return result;
     }
@@ -93,11 +94,14 @@ public final class Config {
     }
 
     private static List<CommandBinding> fromEntries(List<ConfigEntry> data, BindSource source) {
-        List<CommandBinding> result = new ArrayList<>(data.size());
+        Map<String, List<String>> commandsByKey = new LinkedHashMap<>();
         for (ConfigEntry entry : data) {
-            String key = entry.key();
-            String command = entry.value();
-            result.add(new CommandBinding(command, key, source));
+            commandsByKey.computeIfAbsent(entry.key(), k -> new ArrayList<>()).add(entry.value());
+        }
+
+        List<CommandBinding> result = new ArrayList<>(commandsByKey.size());
+        for (Map.Entry<String, List<String>> entry : commandsByKey.entrySet()) {
+            result.add(new CommandBinding(entry.getValue(), entry.getKey(), source));
         }
         return result;
     }

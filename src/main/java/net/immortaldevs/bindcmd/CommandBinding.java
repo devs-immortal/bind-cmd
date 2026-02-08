@@ -5,33 +5,39 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CommandBinding {
     private static final KeyBinding.Category CATEGORY = new KeyBinding.Category(
             Identifier.of("bindcmd", "category")
     );
 
-    public String command;
+    public List<String> commands;
 
     private BindSource source = BindSource.CLIENT;
     private KeyBinding key;
 
-    public CommandBinding(String command, KeyBinding key) {
-        this.command = command;
+    public CommandBinding(List<String> commands, KeyBinding key) {
+        this.commands = new ArrayList<>(commands);
         this.key = key;
     }
 
-    public CommandBinding(String command) {
-        this(command, new KeyBinding("key.keyboard.unknown", -1, CATEGORY));
+    public CommandBinding(List<String> commands) {
+        this(commands, new KeyBinding("key.keyboard.unknown", -1, CATEGORY));
     }
 
-    public CommandBinding(String command, String translationKey, BindSource source) {
-        this(command);
-        this.command = command;
+    public CommandBinding(List<String> commands, String translationKey, BindSource source) {
+        this(commands);
         this.source = source;
         InputUtil.Key keyFromTranslation = InputUtil.fromTranslationKey(translationKey);
         int keyCode = keyFromTranslation.getCode();
         InputUtil.Type type = translationKey.startsWith("key.mouse") ? InputUtil.Type.MOUSE : InputUtil.Type.KEYSYM;
         this.key = new KeyBinding(translationKey, type, keyCode, CATEGORY);
+    }
+
+    public CommandBinding(String command) {
+        this(List.of(command), new KeyBinding("key.keyboard.unknown", -1, CATEGORY));
     }
 
     public KeyBinding getKey() {
