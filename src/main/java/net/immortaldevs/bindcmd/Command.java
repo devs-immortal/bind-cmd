@@ -98,8 +98,10 @@ public final class Command {
         return result.toString();
     }
 
+    @SuppressWarnings("ConstantConditions")
     private String replaceVariables(String expression) {
         Minecraft client = Minecraft.getInstance();
+        if (client == null) return expression;
         LocalPlayer player = client.player;
         if (player == null) return expression;
 
