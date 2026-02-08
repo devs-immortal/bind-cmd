@@ -14,6 +14,17 @@ public final class Command {
     private final CmdType type;
     private final String command;
 
+    private static final List<String> FUNCTIONS;
+
+    static {
+        List<String> functions = new ArrayList<>(List.of(
+                "sqrt", "cbrt", "min", "max", "floor", "ceil", "round", "abs", "sin", "cos", "tan", "asin",
+                "acos", "atan", "atan2", "sinh", "cosh", "tanh", "exp", "ln", "log", "log2", "log10"
+        ));
+        functions.sort((a, b) -> Integer.compare(b.length(), a.length()));
+        FUNCTIONS = Collections.unmodifiableList(functions);
+    }
+
     public Command(String command) {
         if (command.startsWith("@")) {
             var message = getLastMessage(command);
@@ -74,10 +85,12 @@ public final class Command {
             if (expression == null) expression = "";
             String evaluated = expression;
             try {
-                evaluated = replaceVariables(evaluated);
-                evaluated = evaluateExpression(evaluated);
+                String afterVarReplace = replaceVariables(evaluated);
+                String afterEval = evaluateExpression(afterVarReplace);
+
+                evaluated = !afterEval.equals(afterVarReplace) ? afterEval : matcher.group();
             } catch (Exception ignored) {
-                // ignore evaluation errors
+                evaluated = matcher.group();
             }
             matcher.appendReplacement(result, Matcher.quoteReplacement(evaluated));
         }
@@ -114,11 +127,6 @@ public final class Command {
         List<String> output = new ArrayList<>();
         Deque<String> operators = new ArrayDeque<>();
 
-        List<String> methods = List.of(
-                "sqrt", "cbrt", "min", "max", "floor", "ceil", "round", "abs", "sin", "cos", "tan", "asin",
-                "acos", "atan", "atan2", "sinh", "cosh", "tanh", "exp", "ln", "log", "log2", "log10"
-        );
-
         Map<String, Integer> precedence = Map.of(
                 "+", 2,
                 "-", 2,
@@ -128,12 +136,15 @@ public final class Command {
                 "^", 4
         );
 
-        String tokenPattern = "([\\-0-9.]+)|\\s*([()+\\-*/%^]|" + String.join("|", methods) + ")\\s*";
+        String tokenPattern = "(-?\\d+(?:\\.\\d+)?)|\\s*([()+\\-*/%^]|" + String.join("|", FUNCTIONS) + ")\\s*";
         Pattern tokenRegex = Pattern.compile(tokenPattern);
-        Matcher matcher = tokenRegex.matcher(expression.replace(" ", ""));
+        Matcher matcher = tokenRegex.matcher(expression);
         List<String> tokens = new ArrayList<>();
         while (matcher.find()) {
-            tokens.add(matcher.group().trim());
+            String token = matcher.group().trim();
+            if (!token.isEmpty()) {
+                tokens.add(token);
+            }
         }
 
         if (tokens.size() < 2) return expression;
@@ -150,12 +161,12 @@ public final class Command {
                 }
             } else if (isDouble(token)) {
                 output.add(token);
-            } else if (precedence.containsKey(token) || methods.contains(token)) {
-                int tokenPrec = methods.contains(token) ? 5 : precedence.get(token);
+            } else if (precedence.containsKey(token) || FUNCTIONS.contains(token)) {
+                int tokenPrec = FUNCTIONS.contains(token) ? 5 : precedence.get(token);
                 while (!operators.isEmpty() && !operators.getLast().equals("(")) {
                     String last = operators.getLast();
-                    int lastPrec = methods.contains(last) ? 5 : precedence.getOrDefault(last, 0);
-                    boolean leftAssoc = !token.equals("*") && !token.equals("/") && !token.equals("%");
+                    int lastPrec = FUNCTIONS.contains(last) ? 5 : precedence.getOrDefault(last, 0);
+                    boolean leftAssoc = !token.equals("^");
                     if (tokenPrec < lastPrec || (tokenPrec == lastPrec && leftAssoc)) {
                         output.add(operators.removeLast());
                     } else {
@@ -174,7 +185,7 @@ public final class Command {
         for (String token : output) {
             if (isDouble(token)) {
                 stack.addLast(Double.parseDouble(token));
-            } else if (methods.contains(token)) {
+            } else if (FUNCTIONS.contains(token)) {
                 double operand = stack.removeLast();
                 double result;
                 switch (token) {
@@ -192,15 +203,15 @@ public final class Command {
                     case "asin" -> result = asin(operand);
                     case "acos" -> result = acos(operand);
                     case "atan" -> result = atan(operand);
-                    case "atan2" -> result = atan2(operand, stack.removeLast());
+                    case "atan2" -> result = atan2(stack.removeLast(), operand);
                     case "sinh" -> result = sinh(operand);
                     case "cosh" -> result = cosh(operand);
                     case "tanh" -> result = tanh(operand);
                     case "exp" -> result = exp(operand);
                     case "ln" -> result = log(operand);
                     case "log" -> {
-                        double base = stack.removeLast();
-                        result = log(operand) / log(base);
+                        double value = stack.removeLast();
+                        result = log(value) / log(operand);
                     }
                     case "log2" -> result = log(operand) / log(2.0);
                     case "log10" -> result = log10(operand);

@@ -5,34 +5,39 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.resources.Identifier;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CommandBinding {
     private static final KeyMapping.Category CATEGORY = new KeyMapping.Category(
             Identifier.fromNamespaceAndPath("bindcmd", "category")
     );
 
-    public boolean wasPressed = false;
-    public String command;
+    public List<String> commands;
 
     private BindSource source = BindSource.CLIENT;
     private KeyMapping key;
 
-    public CommandBinding(String command, KeyMapping key) {
-        this.command = command;
+    public CommandBinding(List<String> commands, KeyMapping key) {
+        this.commands = new ArrayList<>(commands);
         this.key = key;
     }
 
-    public CommandBinding(String command) {
-        this(command, new KeyMapping("key.keyboard.unknown", -1, CATEGORY));
+    public CommandBinding(List<String> commands) {
+        this(commands, new KeyMapping("key.keyboard.unknown", -1, CATEGORY));
     }
 
-    public CommandBinding(String command, String translationKey, BindSource source) {
-        this(command);
-        this.command = command;
+    public CommandBinding(List<String> commands, String translationKey, BindSource source) {
+        this(commands);
         this.source = source;
         InputConstants.Key keyFromTranslation = InputConstants.getKey(translationKey);
         int keyCode = keyFromTranslation.getValue();
         InputConstants.Type type = translationKey.startsWith("key.mouse") ? InputConstants.Type.MOUSE : InputConstants.Type.KEYSYM;
         this.key = new KeyMapping(translationKey, type, keyCode, CATEGORY);
+    }
+
+    public CommandBinding(String command) {
+        this(List.of(command), new KeyMapping("key.keyboard.unknown", -1, CATEGORY));
     }
 
     public KeyMapping getKey() {
@@ -45,14 +50,6 @@ public class CommandBinding {
 
     public String getTranslationKey() {
         return this.key.saveString();
-    }
-
-    public boolean isUnknown() {
-        return getTranslationKey().endsWith("unknown");
-    }
-
-    public boolean isPressed() {
-        return key.isDown();
     }
 
     public void setBoundKey(KeyEvent keyInput) {

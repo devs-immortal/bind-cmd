@@ -31,9 +31,7 @@ public final class BindingsListWidget extends ContainerObjectSelectionList<Bindi
     public BindingsListWidget(ModConfigScreen parent, Minecraft client) {
         super(client, parent.width, parent.layout.getContentHeight(), parent.layout.getHeaderHeight(), 20);
         this.parent = parent;
-        for (CommandBinding binding : Config.getBindings()) {
-            addEntry(new BindingEntry(binding));
-        }
+        rebuildEntries();
     }
 
     public void update() {
@@ -42,7 +40,16 @@ public final class BindingsListWidget extends ContainerObjectSelectionList<Bindi
     }
 
     public void addBinding(CommandBinding binding) {
-        addEntry(new BindingEntry(binding));
+        rebuildEntries();
+    }
+
+    private void rebuildEntries() {
+        clearEntries();
+        for (CommandBinding binding : Config.getBindings()) {
+            for (int i = 0; i < binding.commands.size(); i++) {
+                addEntry(new BindingEntry(binding, i));
+            }
+        }
     }
 
     private void updateChildren() {
@@ -64,13 +71,15 @@ public final class BindingsListWidget extends ContainerObjectSelectionList<Bindi
     @Environment(EnvType.CLIENT)
     public class BindingEntry extends Entry<BindingEntry> {
         private final CommandBinding binding;
+        private final int commandIndex;
         private final Button editButton;
         private final Button deleteButton;
         private final EditBox inputField;
         private boolean duplicate = false;
 
-        public BindingEntry(CommandBinding binding) {
+        public BindingEntry(CommandBinding binding, int commandIndex) {
             this.binding = binding;
+            this.commandIndex = commandIndex;
             editButton = Button.builder(Component.empty(), button -> editButtonPressed())
                     .bounds(0, 0, 75, 20)
                     .build();
@@ -87,12 +96,14 @@ public final class BindingsListWidget extends ContainerObjectSelectionList<Bindi
             );
             inputField.setResponder(this::inputFieldChanged);
             inputField.setMaxLength(256);
-            inputField.setValue(binding.command);
+            inputField.setValue(binding.commands.get(commandIndex));
             update();
         }
 
         private void inputFieldChanged(String text) {
-            binding.command = text;
+            if (text != null && !text.trim().isEmpty()) {
+                binding.commands.set(commandIndex, text);
+            }
         }
 
         @Override
@@ -120,7 +131,7 @@ public final class BindingsListWidget extends ContainerObjectSelectionList<Bindi
                 inputField.render(graphics, mouseX, mouseY, delta);
             } else {
                 int yPosition = y + height / 2 - 2;
-                String text = cutString(binding.command, font, textWidth - 12);
+                String text = cutString(binding.commands.get(commandIndex), font, textWidth - 12);
                 graphics.drawString(font, text, x, yPosition, -1);
             }
 
@@ -193,13 +204,18 @@ public final class BindingsListWidget extends ContainerObjectSelectionList<Bindi
         }
 
         private void deleteButtonPressed() {
-            binding.unbind();
-            Config.remove(binding);
+            binding.commands.remove(commandIndex);
+
+            if (binding.commands.isEmpty()) {
+                binding.unbind();
+                Config.remove(binding);
+            }
 
             BindingsListWidget list = BindingsListWidget.this;
             list.parent.clearSelectedBinding();
-            list.removeEntry(this);
             list.setScrollAmount(list.scrollAmount() - 20);
+
+            list.rebuildEntries();
             list.update();
         }
 

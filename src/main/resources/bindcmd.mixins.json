@@ -4,6 +4,7 @@
   "package": "net.immortaldevs.bindcmd.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "KeyBindingMixin"
   ],
   "server": [
     "MinecraftServerMixin",

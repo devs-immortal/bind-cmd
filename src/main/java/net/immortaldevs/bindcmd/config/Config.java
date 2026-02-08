@@ -5,40 +5,70 @@ import net.immortaldevs.bindcmd.CommandBinding;
 import net.minecraft.client.Minecraft;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public final class Config {
     private static final ConfigLoader loader = new ConfigLoader(Minecraft.getInstance().gameDirectory);
 
-    private static List<CommandBinding> serverBindings = Collections.emptyList();
     private static List<CommandBinding> clientBindings = new ArrayList<>();
+    private static List<CommandBinding> serverBindings = Collections.emptyList();
+
+    private static List<CommandBinding> allBindings = Collections.emptyList();
+    private static Map<String, List<String>> commandsMap = Collections.emptyMap();
 
     public static List<CommandBinding> getBindings() {
-        List<CommandBinding> result = new ArrayList<>(clientBindings.size() + serverBindings.size());
-        result.addAll(clientBindings);
-        result.addAll(serverBindings);
-        return result;
+        return allBindings;
+    }
+
+    public static List<String> getCommands(String translationKey) {
+        return commandsMap.getOrDefault(translationKey, Collections.emptyList());
     }
 
     public static void load() {
         clientBindings = fromEntries(loader.read());
         if (clientBindings.isEmpty()) save(true);
+        updateBindings();
     }
 
     public static void loadWorldConfig(Path path) {
         if (path == null) return;
         List<ConfigEntry> data = new ConfigLoader(path.toFile()).read();
         serverBindings = fromEntries(data, BindSource.WORLD);
+        updateBindings();
     }
 
     public static void remove(CommandBinding binding) {
-        clientBindings.remove(binding);
+        if (clientBindings.remove(binding)) {
+            updateBindings();
+        }
     }
 
     public static void add(CommandBinding binding) {
         clientBindings.add(binding);
+        updateBindings();
+    }
+
+    public static void setServerBindings(List<ConfigEntry> data) {
+        serverBindings = fromEntries(data, BindSource.SERVER);
+        updateBindings();
+    }
+
+    public static void clearServerBindings() {
+        serverBindings = Collections.emptyList();
+        updateBindings();
+    }
+
+    private static void updateBindings() {
+        List<CommandBinding> combined = new ArrayList<>(clientBindings.size() + serverBindings.size());
+        combined.addAll(clientBindings);
+        combined.addAll(serverBindings);
+        allBindings = Collections.unmodifiableList(combined);
+
+        Map<String, List<String>> map = new HashMap<>();
+        for (CommandBinding binding : combined) {
+            map.computeIfAbsent(binding.getTranslationKey(), k -> new ArrayList<>()).addAll(binding.commands);
+        }
+        commandsMap = Collections.unmodifiableMap(map);
     }
 
     public static void save() {
@@ -49,18 +79,12 @@ public final class Config {
         loader.write(toEntries(clientBindings), backup);
     }
 
-    public static void setServerBindings(List<ConfigEntry> data) {
-        serverBindings = fromEntries(data, BindSource.SERVER);
-    }
-
-    public static void clearServerBindings() {
-        serverBindings = Collections.emptyList();
-    }
-
     private static List<ConfigEntry> toEntries(List<CommandBinding> data) {
-        List<ConfigEntry> result = new ArrayList<>(data.size());
+        List<ConfigEntry> result = new ArrayList<>();
         for (CommandBinding binding : data) {
-            result.add(new ConfigEntry(binding.getTranslationKey(), binding.command));
+            for (String command : binding.commands) {
+                result.add(new ConfigEntry(binding.getTranslationKey(), command));
+            }
         }
         return result;
     }
@@ -70,11 +94,14 @@ public final class Config {
     }
 
     private static List<CommandBinding> fromEntries(List<ConfigEntry> data, BindSource source) {
-        List<CommandBinding> result = new ArrayList<>(data.size());
+        Map<String, List<String>> commandsByKey = new LinkedHashMap<>();
         for (ConfigEntry entry : data) {
-            String key = entry.key();
-            String command = entry.value();
-            result.add(new CommandBinding(command, key, source));
+            commandsByKey.computeIfAbsent(entry.key(), k -> new ArrayList<>()).add(entry.value());
+        }
+
+        List<CommandBinding> result = new ArrayList<>(commandsByKey.size());
+        for (Map.Entry<String, List<String>> entry : commandsByKey.entrySet()) {
+            result.add(new CommandBinding(entry.getValue(), entry.getKey(), source));
         }
         return result;
     }
