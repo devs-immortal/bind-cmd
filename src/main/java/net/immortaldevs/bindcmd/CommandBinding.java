@@ -10,7 +10,6 @@ public class CommandBinding {
             Identifier.of("bindcmd", "category")
     );
 
-    public boolean wasPressed = false;
     public String command;
 
     private BindSource source = BindSource.CLIENT;
@@ -45,14 +44,6 @@ public class CommandBinding {
 
     public String getTranslationKey() {
         return this.key.getBoundKeyTranslationKey();
-    }
-
-    public boolean isUnknown() {
-        return getTranslationKey().endsWith("unknown");
-    }
-
-    public boolean isPressed() {
-        return key.isPressed();
     }
 
     public void setBoundKey(KeyInput keyInput) {

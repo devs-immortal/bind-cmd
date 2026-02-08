@@ -22,6 +22,16 @@ public final class Config {
         return result;
     }
 
+    public static List<String> getCommands(String translationKey) {
+        List<String> result = new ArrayList<>();
+        for (CommandBinding binding : getBindings()) {
+            if (binding.getTranslationKey().equals(translationKey)) {
+                result.add(binding.command);
+            }
+        }
+        return result;
+    }
+
     public static void load() {
         clientBindings = fromEntries(loader.read());
         if (clientBindings.isEmpty()) save(true);
