@@ -9,7 +9,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.EditBox;
@@ -107,7 +107,7 @@ public final class BindingsListWidget extends ContainerObjectSelectionList<Bindi
         }
 
         @Override
-        public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float delta) {
+        public void extractContent(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float delta) {
             Font font = BindingsListWidget.this.minecraft.font;
             int textWidth = getWidth() - editButton.getWidth() - deleteButton.getWidth() - 3;
             boolean isClient = binding.getSource() == BindSource.CLIENT;
@@ -128,11 +128,11 @@ public final class BindingsListWidget extends ContainerObjectSelectionList<Bindi
                 inputField.setWidth(textWidth);
                 inputField.setTooltip(tooltip);
                 inputField.setEditable(isClient);
-                inputField.render(graphics, mouseX, mouseY, delta);
+                inputField.extractRenderState(graphics, mouseX, mouseY, delta);
             } else {
                 int yPosition = y + height / 2 - 2;
                 String text = cutString(binding.commands.get(commandIndex), font, textWidth - 12);
-                graphics.drawString(font, text, x, yPosition, -1);
+                graphics.text(font, text, x, yPosition, -1);
             }
 
             editButton.setTooltip(tooltip);
@@ -144,14 +144,14 @@ public final class BindingsListWidget extends ContainerObjectSelectionList<Bindi
             deleteButton.active = isClient;
             deleteButton.setX(x + getWidth() - deleteButton.getWidth());
             deleteButton.setY(y);
-            deleteButton.render(graphics, mouseX, mouseY, delta);
+            deleteButton.extractRenderState(graphics, mouseX, mouseY, delta);
 
             if (duplicate) {
                 int j = editButton.getX() - 6;
                 graphics.fill(j, y + 2, j + 3, y + height + 2, 0xFFFF0000);
             }
 
-            editButton.render(graphics, mouseX, mouseY, delta);
+            editButton.extractRenderState(graphics, mouseX, mouseY, delta);
         }
 
         @Override
