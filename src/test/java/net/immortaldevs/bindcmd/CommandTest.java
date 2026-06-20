@@ -22,9 +22,9 @@ class CommandTest {
     @Test
     @DisplayName("Should detect NONE type for empty string")
     void testGetType_EmptyString_ReturnsNone() {
-        assertThrows(StringIndexOutOfBoundsException.class, () -> {
-            new Command("");
-        });
+        Command cmd = new Command("");
+        assertEquals(Command.CmdType.NONE, cmd.getType());
+        assertEquals("", cmd.getCommand());
     }
 
     @Test
@@ -213,8 +213,7 @@ class CommandTest {
     @DisplayName("Should handle negative numbers")
     void testEvaluateExpression_NegativeNumbers() {
         Command cmd = new Command("Result: ${-5 + 3}");
-        String result = cmd.getCommand();
-        assertTrue(result.equals("Result: -2") || result.contains("${-5 + 3}"));
+        assertEquals("Result: -2", cmd.getCommand());
     }
 
     @Test
@@ -228,8 +227,7 @@ class CommandTest {
     @DisplayName("Should handle empty expression")
     void testEvaluateExpression_EmptyExpression() {
         Command cmd = new Command("Result: ${}");
-        String result = cmd.getCommand();
-        assertTrue(result.equals("Result: ") || result.equals("Result: ${}"));
+        assertEquals("Result: ${}", cmd.getCommand());
     }
 
     @Test
@@ -268,4 +266,40 @@ class CommandTest {
         assertEquals(Command.CmdType.COMMAND, cmd.getType());
         assertEquals("say Result is 54", cmd.getCommand());
     }
+
+    @Test
+    @DisplayName("Exponentiation is right-associative: 2^3^2 = 2^(3^2) = 512")
+    void testEvaluateExpression_PowerIsRightAssociative() {
+        Command cmd = new Command("${2 ^ 3 ^ 2}");
+        assertEquals("512", cmd.getCommand());
+    }
+
+    @Test
+    @DisplayName("Subtraction is left-associative: 10 - 3 - 2 = 5")
+    void testEvaluateExpression_SubtractionIsLeftAssociative() {
+        Command cmd = new Command("${10 - 3 - 2}");
+        assertEquals("5", cmd.getCommand());
+    }
+
+    @Test
+    @DisplayName("Division is left-associative: 20 / 4 / 5 = 1")
+    void testEvaluateExpression_DivisionIsLeftAssociative() {
+        Command cmd = new Command("${20 / 4 / 5}");
+        assertEquals("1", cmd.getCommand());
+    }
+
+    @Test
+    @DisplayName("Negative operand after an operator: 3 * -2 = -6")
+    void testEvaluateExpression_NegativeOperandAfterOperator() {
+        Command cmd = new Command("${3 * -2}");
+        assertEquals("-6", cmd.getCommand());
+    }
+
+    @Test
+    @DisplayName("Subtracting a negative: 5 - -3 = 8")
+    void testEvaluateExpression_SubtractNegative() {
+        Command cmd = new Command("${5 - -3}");
+        assertEquals("8", cmd.getCommand());
+    }
+
 }
