@@ -6,7 +6,8 @@
   "environment": "client",
   "entrypoints": {
     "fabric-client-gametest": [
-      "net.immortaldevs.bindcmd.gametest.CommandGameTest"
+      "net.immortaldevs.bindcmd.gametest.CommandGameTest",
+      "net.immortaldevs.bindcmd.gametest.KeybindFlowGameTest"
     ]
   },
   "depends": {
