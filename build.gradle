@@ -56,6 +56,15 @@ loom {
     accessWidenerPath = file("src/main/resources/bindcmd.accesswidener")
 }
 
+fabricApi {
+    configureTests {
+        createSourceSet = true
+        modId = "bind_cmd-test"
+        enableClientGameTests = true
+        eula = true
+    }
+}
+
 test {
     useJUnitPlatform()
     testLogging {

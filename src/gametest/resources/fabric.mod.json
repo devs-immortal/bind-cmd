@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "bind_cmd-test",
+  "version": "1.0.0",
+  "name": "BindCommands Client Game Tests",
+  "environment": "client",
+  "entrypoints": {
+    "fabric-client-gametest": [
+    ]
+  },
+  "depends": {
+    "bind_cmd": "*",
+    "fabric-client-gametest-api-v1": "*"
+  }
+}
