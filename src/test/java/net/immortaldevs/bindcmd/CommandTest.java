@@ -372,4 +372,54 @@ class CommandTest {
         assertEquals("1", cmd.getCommand());
     }
 
+    @Test
+    @DisplayName("A lone slash is a COMMAND with an empty body")
+    void testGetType_LoneSlash() {
+        Command cmd = new Command("/");
+        assertEquals(Command.CmdType.COMMAND, cmd.getType());
+        assertEquals("", cmd.getCommand());
+    }
+
+    @Test
+    @DisplayName("@ with a non-numeric offset is handled gracefully (NONE, empty)")
+    void testAtPrefix_NonNumericOffset() {
+        Command cmd = new Command("@abc");
+        assertEquals(Command.CmdType.NONE, cmd.getType());
+        assertEquals("", cmd.getCommand());
+    }
+
+    @Test
+    @DisplayName("@ with no offset is handled gracefully (NONE, empty)")
+    void testAtPrefix_BareAt() {
+        Command cmd = new Command("@");
+        assertEquals(Command.CmdType.NONE, cmd.getType());
+        assertEquals("", cmd.getCommand());
+    }
+
+    @Test
+    @DisplayName("An unknown $var is left untouched when no player is available")
+    void testProcessMessage_UnknownVariableUnchanged() {
+        Command cmd = new Command("$foo");
+        assertEquals(Command.CmdType.MESSAGE, cmd.getType());
+        assertEquals("$foo", cmd.getCommand());
+    }
+
+    @Test
+    @DisplayName("a single-token expression is returned verbatim")
+    void testEvaluateExpression_SingleTokenUnchanged() {
+        assertEquals("Result: ${5}", new Command("Result: ${5}").getCommand());
+        assertEquals("Result: ${-5}", new Command("Result: ${-5}").getCommand());
+    }
+
+    @Test
+    @DisplayName("an unmatched parenthesis is silently tolerated")
+    void testEvaluateExpression_UnmatchedParenTolerated() {
+        assertEquals("Result: 8", new Command("Result: ${(5 + 3}").getCommand());
+    }
+
+    @Test
+    @DisplayName("-Infinity is collapsed to the same ∞ symbol as +Infinity")
+    void testEvaluateExpression_NegativeInfinitySymbol() {
+        assertEquals("Result: ∞", new Command("Result: ${ln(0)}").getCommand());
+    }
 }
