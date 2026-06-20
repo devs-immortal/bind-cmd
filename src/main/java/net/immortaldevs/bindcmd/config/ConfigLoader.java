@@ -58,18 +58,20 @@ public final class ConfigLoader {
     }
 
     private List<ConfigEntry> decode(String input) {
-        String[] lines = input.split("\n");
+        String[] lines = input.split("\r?\n");
         List<ConfigEntry> data = new ArrayList<>();
         for (String line : lines) {
-            String[] parts = line.split("=\"");
-            if (parts.length != 2) continue;
+            int sep = line.indexOf("=\"");
+            if (sep < 0) continue;
 
-            String translationKey = parts[0];
-            String rawCommandPart = parts[1];
-            if (!rawCommandPart.isEmpty()) {
-                String command = rawCommandPart.substring(0, rawCommandPart.length() - 1);
-                data.add(new ConfigEntry(translationKey, command));
-            }
+            String translationKey = line.substring(0, sep);
+
+            String rawCommandPart = line.substring(sep + 2);
+            if (rawCommandPart.isEmpty() || rawCommandPart.charAt(rawCommandPart.length() - 1) != '"')
+                continue;
+            String command = rawCommandPart.substring(0, rawCommandPart.length() - 1);
+
+            data.add(new ConfigEntry(translationKey, command));
         }
         return data;
     }
