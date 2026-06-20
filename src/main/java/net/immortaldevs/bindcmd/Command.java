@@ -32,7 +32,7 @@ public final class Command {
             this.command = processMessage(message);
         } else {
             this.type = getType(command);
-            var message = this.type == CmdType.MESSAGE ? command : command.substring(1);
+            var message = this.type == CmdType.COMMAND ? command.substring(1) : command;
             this.command = processMessage(message);
         }
     }
@@ -113,16 +113,14 @@ public final class Command {
                 "z", String.valueOf(player.getBlockZ())
         );
 
-        String result = expression;
-        for (Map.Entry<String, String> entry : variables.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            if (expression.contains(key)) {
-                result = result.replace(key, value);
-            }
-        }
+        String result = Pattern.compile("\\w+")
+                .matcher(expression)
+                .replaceAll(match -> {
+                    String value = variables.get(match.group());
+                    return value != null ? Matcher.quoteReplacement(value) : match.group();
+                });
 
-        return expression.equals(result) ? null : result;
+        return result.equals(expression) ? null : result;
     }
 
     private String evaluateExpression(String expression) {
@@ -212,8 +210,8 @@ public final class Command {
                     case "exp" -> result = exp(operand);
                     case "ln" -> result = log(operand);
                     case "log" -> {
-                        double value = stack.removeLast();
-                        result = log(value) / log(operand);
+                        double base = stack.removeLast();
+                        result = log(operand) / log(base);
                     }
                     case "log2" -> result = log(operand) / log(2.0);
                     case "log10" -> result = log10(operand);
@@ -230,8 +228,11 @@ public final class Command {
 
         if (stack.isEmpty()) return expression;
         double result = stack.getFirst();
+        if (Double.isNaN(result)) return expression;
         if (Double.isInfinite(result)) return "∞";
-        if (result % 1.0 == 0.0) return Integer.toString((int) result);
+        if (result % 1.0 == 0.0 && Math.abs(result) <= Long.MAX_VALUE) {
+            return Long.toString((long) result);
+        }
         return Double.toString(result);
     }
 
