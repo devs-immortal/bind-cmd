@@ -302,4 +302,74 @@ class CommandTest {
         assertEquals("8", cmd.getCommand());
     }
 
+    @Test
+    @DisplayName("Large whole-number product must not overflow int formatting")
+    void testEvaluateExpression_LargeProductDoesNotOverflow() {
+        Command cmd = new Command("${1000000 * 1000000}");
+        assertEquals("1000000000000", cmd.getCommand());
+    }
+
+    @Test
+    @DisplayName("Large power must not overflow int formatting")
+    void testEvaluateExpression_LargePowerDoesNotOverflow() {
+        Command cmd = new Command("${2 ^ 40}");
+        assertEquals("1099511627776", cmd.getCommand());
+    }
+
+    @Test
+    @DisplayName("Modulo by zero must not emit raw 'NaN'")
+    void testEvaluateExpression_ModuloByZeroNoNaN() {
+        Command cmd = new Command("${10 % 0}");
+        assertFalse(cmd.getCommand().contains("NaN"), () -> "leaked NaN: " + cmd.getCommand());
+    }
+
+    @Test
+    @DisplayName("sqrt of a negative must not emit raw 'NaN'")
+    void testEvaluateExpression_SqrtNegativeNoNaN() {
+        Command cmd = new Command("${sqrt(-1)}");
+        assertFalse(cmd.getCommand().contains("NaN"), () -> "leaked NaN: " + cmd.getCommand());
+    }
+
+    @Test
+    @DisplayName("asin outside [-1,1] must not emit raw 'NaN'")
+    void testEvaluateExpression_AsinOutOfDomainNoNaN() {
+        Command cmd = new Command("${asin(2)}");
+        assertFalse(cmd.getCommand().contains("NaN"), () -> "leaked NaN: " + cmd.getCommand());
+    }
+
+    @Test
+    @DisplayName("log(base, value) should read as 'log base 2 of 8' = 3")
+    void testEvaluateExpression_LogBaseValueOrder() {
+        Command cmd = new Command("${log(2, 8)}");
+        assertEquals("3", cmd.getCommand());
+    }
+
+    @Test
+    @DisplayName("log(value, base) is the order the implementation actually honours: log(8, 2) = 3")
+    void testEvaluateExpression_LogValueBaseOrderDocumented() {
+        Command cmd = new Command("${log(8, 2)}");
+        assertEquals("3", cmd.getCommand());
+    }
+
+    @Test
+    @DisplayName("log2 and log10 single-arg helpers evaluate correctly")
+    void testEvaluateExpression_Log2AndLog10() {
+        assertEquals("3", new Command("${log2(8)}").getCommand());
+        assertEquals("3", new Command("${log10(1000)}").getCommand());
+    }
+
+    @Test
+    @DisplayName("Nested functions: sqrt(abs(-16)) = 4")
+    void testEvaluateExpression_NestedSqrtAbs() {
+        Command cmd = new Command("${sqrt(abs(-16))}");
+        assertEquals("4", cmd.getCommand());
+    }
+
+    @Test
+    @DisplayName("Nested functions: ln(exp(1)) = 1")
+    void testEvaluateExpression_NestedLnExp() {
+        Command cmd = new Command("${ln(exp(1))}");
+        assertEquals("1", cmd.getCommand());
+    }
+
 }
