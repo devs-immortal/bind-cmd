@@ -1,6 +1,7 @@
 package net.immortaldevs.bindcmd;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -345,10 +346,10 @@ class CommandTest {
     }
 
     @Test
-    @DisplayName("log(value, base) is the order the implementation actually honours: log(8, 2) = 3")
-    void testEvaluateExpression_LogValueBaseOrderDocumented() {
+    @DisplayName("log(8, 2) = log base 8 of 2 = 1/3")
+    void testEvaluateExpression_LogBaseValueOrderDocumented() {
         Command cmd = new Command("${log(8, 2)}");
-        assertEquals("3", cmd.getCommand());
+        assertTrue(cmd.getCommand().startsWith("0.33333"), () -> "expected ~0.3, got: " + cmd.getCommand());
     }
 
     @Test
