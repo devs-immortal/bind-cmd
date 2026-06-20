@@ -26,15 +26,10 @@ public final class Command {
     }
 
     public Command(String command) {
-        if (command.startsWith("@")) {
-            var message = getLastMessage(command);
-            this.type = getType(message);
-            this.command = processMessage(message);
-        } else {
-            this.type = getType(command);
-            var message = this.type == CmdType.COMMAND ? command.substring(1) : command;
-            this.command = processMessage(message);
-        }
+        var raw = command.startsWith("@") ? getLastMessage(command) : command;
+        this.type = getType(raw);
+        var message = this.type == CmdType.COMMAND ? raw.substring(1) : raw;
+        this.command = processMessage(message);
     }
 
     public CmdType getType() {

@@ -60,6 +60,7 @@ fabricApi {
     configureTests {
         createSourceSet = true
         modId = "bind_cmd-test"
+        enableGameTests = true
         enableClientGameTests = true
         eula = true
     }
