@@ -22,7 +22,8 @@ public record ConfigPayload(List<ConfigEntry> config) implements CustomPacketPay
         public List<ConfigEntry> decode(ByteBuf buf) {
             if (buf == null) return Collections.emptyList();
             int size = buf.readInt();
-            List<ConfigEntry> list = new ArrayList<>(size);
+            if (size < 0) return Collections.emptyList();
+            List<ConfigEntry> list = new ArrayList<>();
             for (int i = 0; i < size; i++) {
                 String key = Utf8String.read(buf, 32767);
                 String command = Utf8String.read(buf, 32767);
