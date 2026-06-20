@@ -7,7 +7,7 @@ import net.immortaldevs.bindcmd.Command;
 import net.minecraft.client.player.LocalPlayer;
 
 @SuppressWarnings("UnstableApiUsage")
-public class BindCmdClientGameTest implements FabricClientGameTest {
+public class CommandGameTest implements FabricClientGameTest {
     @Override
     public void runTest(ClientGameTestContext context) {
         try (TestSingleplayerContext singleplayer = context.worldBuilder().create()) {
