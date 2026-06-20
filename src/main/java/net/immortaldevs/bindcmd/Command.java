@@ -136,7 +136,7 @@ public final class Command {
                 "^", 4
         );
 
-        String tokenPattern = "(-?\\d+(?:\\.\\d+)?)|\\s*([()+\\-*/%^]|" + String.join("|", FUNCTIONS) + ")\\s*";
+        String tokenPattern = "((?<![\\d)])-?\\d+(?:\\.\\d+)?)|\\s*([()+\\-*/%^]|" + String.join("|", FUNCTIONS) + ")\\s*";
         Pattern tokenRegex = Pattern.compile(tokenPattern);
         Matcher matcher = tokenRegex.matcher(expression);
         List<String> tokens = new ArrayList<>();

@@ -423,4 +423,16 @@ class CommandTest {
     void testEvaluateExpression_NegativeInfinitySymbol() {
         assertEquals("Result: ∞", new Command("Result: ${ln(0)}").getCommand());
     }
+
+    @Test
+    @DisplayName("subtraction without surrounding spaces still subtracts")
+    void testEvaluateExpression_SubtractionWithoutSpaces() {
+        assertEquals("7", new Command("${10-3}").getCommand());
+    }
+
+    @Test
+    @DisplayName("single-digit subtraction without spaces still subtracts")
+    void testEvaluateExpression_SubtractionNoSpacesSingleDigits() {
+        assertEquals("0", new Command("${1-1}").getCommand());
+    }
 }
