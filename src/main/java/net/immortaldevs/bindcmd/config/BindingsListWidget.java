@@ -172,7 +172,7 @@ public final class BindingsListWidget extends ContainerObjectSelectionList<Bindi
             if (!binding.getKey().isUnbound()) {
                 KeyMapping[] allKeys = BindingsListWidget.this.minecraft.options.keyMappings;
                 for (KeyMapping keyBinding : allKeys) {
-                    if (keyBinding != binding.getKey() && binding.getKey().equals(keyBinding)) {
+                    if (keyBinding != binding.getKey() && binding.getKey().same(keyBinding)) {
                         if (duplicate) {
                             tooltip.append(", ");
                         }
