@@ -63,8 +63,8 @@ public final class Command {
     }
 
     private ArrayListDeque<String> getChatHistory() {
-        var hud = Minecraft.getInstance().gui.hud;
-        var chatHud = hud.getChat();
+        var inGameHud = Minecraft.getInstance().gui;
+        var chatHud = inGameHud.getChat();
         return chatHud.getRecentChat();
     }
 

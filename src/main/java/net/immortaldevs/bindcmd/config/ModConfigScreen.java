@@ -97,7 +97,7 @@ public final class ModConfigScreen extends OptionsSubScreen {
 
     private void doneButtonPressed() {
         Config.save();
-        minecraft.gui.setScreen(lastScreen);
+        minecraft.setScreen(lastScreen);
     }
 
     private void addButtonPressed() {

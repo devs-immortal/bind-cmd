@@ -33,8 +33,8 @@ public class HistoryGameTest implements FabricClientGameTest {
 
     private static void seedChatHistory(ClientGameTestContext context, String entry) {
         context.runOnClient(client -> {
-            client.gui.hud.getChat().getRecentChat().addLast(entry);
-            if (!client.gui.hud.getChat().getRecentChat().contains(entry)) {
+            client.gui.getChat().getRecentChat().addLast(entry);
+            if (!client.gui.getChat().getRecentChat().contains(entry)) {
                 throw new AssertionError(
                         "could not seed chat history. getRecentChat() did not retain \"" + entry + "\""
                 );
