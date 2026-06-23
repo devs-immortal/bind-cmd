@@ -8,7 +8,8 @@
     "fabric-client-gametest": [
       "net.immortaldevs.bindcmd.gametest.CommandGameTest",
       "net.immortaldevs.bindcmd.gametest.KeybindFlowGameTest",
-      "net.immortaldevs.bindcmd.gametest.HistoryGameTest"
+      "net.immortaldevs.bindcmd.gametest.HistoryGameTest",
+      "net.immortaldevs.bindcmd.gametest.ConfigScreenGameTest"
     ]
   },
   "depends": {
