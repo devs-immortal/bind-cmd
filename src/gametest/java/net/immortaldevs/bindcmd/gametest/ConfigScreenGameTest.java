@@ -26,7 +26,7 @@ public class ConfigScreenGameTest implements FabricClientGameTest {
 
     @Override
     public void runTest(ClientGameTestContext context) {
-        Screen lastScreen = context.computeOnClient(client -> client.gui.screen());
+        Screen lastScreen = context.computeOnClient(client -> client.screen);
         if (lastScreen == null) {
             throw new AssertionError("expected a non-null initial screen to use as the parent screen");
         }
@@ -45,7 +45,7 @@ public class ConfigScreenGameTest implements FabricClientGameTest {
                         Config.remove(binding);
                     }
                 }
-                client.gui.setScreen(lastScreen);
+                client.setScreen(lastScreen);
             });
         }
     }
@@ -55,7 +55,7 @@ public class ConfigScreenGameTest implements FabricClientGameTest {
 
         context.clickScreenButton(DONE_KEY);
 
-        context.waitFor(client -> client.gui.screen() == lastScreen);
+        context.waitFor(client -> client.screen == lastScreen);
     }
 
     private static void testAddCommandButton(ClientGameTestContext context, Screen lastScreen) {
@@ -171,10 +171,10 @@ public class ConfigScreenGameTest implements FabricClientGameTest {
     }
 
     private static ModConfigScreen currentScreen(Minecraft client) {
-        if (client.gui.screen() instanceof ModConfigScreen screen) {
+        if (client.screen instanceof ModConfigScreen screen) {
             return screen;
         }
-        throw new AssertionError("expected config screen, found " + client.gui.screen());
+        throw new AssertionError("expected config screen, found " + client.screen);
     }
 
     private static BindingsListWidget findBindingsList(ModConfigScreen screen) {
