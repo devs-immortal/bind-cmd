@@ -71,12 +71,12 @@ public final class Config {
         commandsMap = Collections.unmodifiableMap(map);
     }
 
-    public static void save() {
-        save(false);
+    public static boolean save() {
+        return save(false);
     }
 
-    public static void save(boolean backup) {
-        loader.write(toEntries(clientBindings), backup);
+    public static boolean save(boolean backup) {
+        return loader.write(toEntries(clientBindings), backup);
     }
 
     private static List<ConfigEntry> toEntries(List<CommandBinding> data) {

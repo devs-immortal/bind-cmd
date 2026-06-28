@@ -21,15 +21,11 @@ public final class ConfigLoader {
     }
 
     public List<ConfigEntry> read() {
-        ensureConfigDirExists();
-        File file = new File(runDirectory, CONFIG_FILE);
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException ignored) {
-            }
+        File file = getConfigFile(CONFIG_FILE);
+        if (file == null) {
             return Collections.emptyList();
         }
+
         try (FileInputStream stream = new FileInputStream(file)) {
             byte[] contentBytes = stream.readAllBytes();
             String content = new String(contentBytes, StandardCharsets.UTF_8);
@@ -39,22 +35,39 @@ public final class ConfigLoader {
         }
     }
 
-    public void write(List<ConfigEntry> data, boolean backup) {
-        ensureConfigDirExists();
+    public boolean write(List<ConfigEntry> data, boolean backup) {
         String fileName = backup ? CONFIG_BACKUP_FILE : CONFIG_FILE;
-        File file = new File(runDirectory, fileName);
+        File file = getConfigFile(fileName);
+        if (file == null) {
+            return false;
+        }
+
         String encoded = encode(data);
         try (FileOutputStream out = new FileOutputStream(file)) {
             out.write(encoded.getBytes(StandardCharsets.UTF_8));
+            return true;
         } catch (IOException ignored) {
+            return false;
         }
     }
 
-    private void ensureConfigDirExists() {
-        File configDir = new File(runDirectory, CONFIG_DIR);
-        if (!configDir.exists()) {
-            configDir.mkdirs();
+    private File getConfigFile(String fileName) {
+        File file = new File(runDirectory, fileName);
+        if (!ensureConfigDirExists()) {
+            try {
+                if (!file.createNewFile()) {
+                    return null;
+                }
+            } catch (IOException _) {
+            }
+            return null;
         }
+        return file;
+    }
+
+    private boolean ensureConfigDirExists() {
+        File configDir = new File(runDirectory, CONFIG_DIR);
+        return configDir.exists() || configDir.mkdirs();
     }
 
     private List<ConfigEntry> decode(String input) {
