@@ -12,25 +12,31 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Mixin(value = KeyMapping.class, priority = 999)
 public abstract class KeyMappingMixin {
     @Unique
-    private static long lastKeyPress = 0L;
+    private static final Map<String, Long> lastKeyPress = new HashMap<>();
     @Unique
     private static final long COOLDOWN = 200L;
 
     @Inject(method = "click", at = @At("HEAD"))
     private static void click(InputConstants.Key key, CallbackInfo ci) {
-        if (System.currentTimeMillis() - lastKeyPress < COOLDOWN) return;
+        final String name = key.getName();
+        final List<String> commands = Config.getCommands(name);
+        if (commands.isEmpty()) return;
 
-        final var client = Minecraft.getInstance();
-        final var networkHandler = client.getConnection();
+        final long now = System.currentTimeMillis();
+        final Long previous = lastKeyPress.get(name);
+        if (previous != null && now - previous < COOLDOWN) return;
 
+        final var networkHandler = Minecraft.getInstance().getConnection();
         if (networkHandler == null) return;
 
-        final var commands = Config.getCommands(key.getName());
+        lastKeyPress.put(name, now);
         handleCommands(commands, networkHandler);
     }
 
@@ -46,6 +52,5 @@ public abstract class KeyMappingMixin {
                 }
             }
         }
-        lastKeyPress = System.currentTimeMillis();
     }
 }

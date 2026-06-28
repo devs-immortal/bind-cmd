@@ -9,7 +9,8 @@
       "net.immortaldevs.bindcmd.gametest.CommandGameTest",
       "net.immortaldevs.bindcmd.gametest.KeybindFlowGameTest",
       "net.immortaldevs.bindcmd.gametest.HistoryGameTest",
-      "net.immortaldevs.bindcmd.gametest.ConfigScreenGameTest"
+      "net.immortaldevs.bindcmd.gametest.ConfigScreenGameTest",
+      "net.immortaldevs.bindcmd.gametest.KeybindCooldownRegressionGameTest"
     ]
   },
   "depends": {
