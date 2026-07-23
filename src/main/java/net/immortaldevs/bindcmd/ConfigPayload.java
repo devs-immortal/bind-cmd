@@ -20,9 +20,15 @@ public record ConfigPayload(List<ConfigEntry> config) implements CustomPacketPay
     public static final StreamCodec<ByteBuf, List<ConfigEntry>> TUPLES_CODEC = new StreamCodec<>() {
         @Override
         public List<ConfigEntry> decode(ByteBuf buf) {
-            if (buf == null) return Collections.emptyList();
+            if (buf == null) {
+                BindCmd.LOGGER.warn("ConfigPayload.decode called with null buffer. Returning empty config");
+                return Collections.emptyList();
+            }
             int size = buf.readInt();
-            if (size < 0) return Collections.emptyList();
+            if (size < 0) {
+                BindCmd.LOGGER.warn("ConfigPayload.decode read negative size {}. Returning empty config", size);
+                return Collections.emptyList();
+            }
             List<ConfigEntry> list = new ArrayList<>();
             for (int i = 0; i < size; i++) {
                 String key = Utf8String.read(buf, 32767);
@@ -34,7 +40,10 @@ public record ConfigPayload(List<ConfigEntry> config) implements CustomPacketPay
 
         @Override
         public void encode(ByteBuf buf, List<ConfigEntry> value) {
-            if (buf == null || value == null) return;
+            if (buf == null || value == null) {
+                BindCmd.LOGGER.warn("ConfigPayload.encode called with null buffer or value. Skipping");
+                return;
+            }
             buf.writeInt(value.size());
             for (ConfigEntry entry : value) {
                 Utf8String.write(buf, entry.key(), 32767);

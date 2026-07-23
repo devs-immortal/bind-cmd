@@ -17,17 +17,20 @@ public final class BindCmdServer implements DedicatedServerModInitializer {
 
     @Override
     public void onInitializeServer() {
+        BindCmd.LOGGER.info("Initializing BindCommands dedicated server");
         PayloadTypeRegistry.clientboundPlay().register(ConfigPayload.ID, ConfigPayload.CODEC);
         PayloadTypeRegistry.clientboundConfiguration().register(ConfigPayload.ID, ConfigPayload.CODEC);
 
         ServerLifecycleEvents.SERVER_STARTED.register((MinecraftServer minecraftServer) -> {
             ConfigLoader loader = new ConfigLoader(minecraftServer.getServerDirectory().toFile());
             bindings = loader.read();
+            BindCmd.LOGGER.info("Loaded {} server binding entries from {}", bindings.size(), minecraftServer.getServerDirectory().toAbsolutePath());
         });
 
         ServerEntityEvents.ENTITY_LOAD.register((entity, _) -> {
             if (!(entity instanceof ServerPlayer player)) return;
             ConfigPayload payload = new ConfigPayload(bindings);
+            BindCmd.LOGGER.debug("Sending ConfigPayload with {} entries to {}", bindings.size(), player.getName().getString());
             ServerPlayNetworking.send(player, payload);
         });
     }

@@ -1,6 +1,7 @@
 package net.immortaldevs.bindcmd.mixin;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import net.immortaldevs.bindcmd.BindCmd;
 import net.immortaldevs.bindcmd.Command;
 import net.immortaldevs.bindcmd.config.Config;
 import net.minecraft.client.KeyMapping;
@@ -28,13 +29,20 @@ public abstract class KeyMappingMixin {
         final String name = key.getName();
         final List<String> commands = Config.getCommands(name);
         if (commands.isEmpty()) return;
+        BindCmd.LOGGER.debug("Key {} pressed with {} bound commands", name, commands.size());
 
         final long now = System.currentTimeMillis();
         final Long previous = lastKeyPress.get(name);
-        if (previous != null && now - previous < COOLDOWN) return;
+        if (previous != null && now - previous < COOLDOWN) {
+            BindCmd.LOGGER.debug("Key {} press suppressed by {}ms cooldown", name, COOLDOWN);
+            return;
+        }
 
         final var networkHandler = Minecraft.getInstance().getConnection();
-        if (networkHandler == null) return;
+        if (networkHandler == null) {
+            BindCmd.LOGGER.warn("Key {} pressed but no network connection. Dropping {} commands", name, commands.size());
+            return;
+        }
 
         lastKeyPress.put(name, now);
         handleCommands(commands, networkHandler);
@@ -48,6 +56,7 @@ public abstract class KeyMappingMixin {
                 case COMMAND -> networkHandler.sendCommand(cmd.getCommand());
                 case MESSAGE -> networkHandler.sendChat(cmd.getCommand());
                 case NONE -> {
+                    BindCmd.LOGGER.warn("Blank/unresolvable command '{}'. Skipping remaining commands", command);
                     return;
                 }
             }

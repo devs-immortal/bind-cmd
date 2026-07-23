@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.Math.*;
+import static net.immortaldevs.bindcmd.BindCmd.LOGGER;
 
 public final class Command {
     private final CmdType type;
@@ -54,10 +55,12 @@ public final class Command {
             int offset = Integer.parseInt(command.substring(1));
             var history = getChatHistory();
             if (history.isEmpty() || offset < 0 || offset >= history.size()) {
+                LOGGER.debug("Chat history reference '{}' out of range (history size {})", command, history.size());
                 return "";
             }
             return history.get(history.size() - 1 - offset);
         } catch (NumberFormatException e) {
+            LOGGER.debug("Invalid chat history reference '{}'", command);
             return "";
         }
     }
@@ -82,7 +85,8 @@ public final class Command {
             try {
                 String afterVarReplace = replaceVariables(evaluated);
                 evaluated = evaluateExpression(afterVarReplace != null ? afterVarReplace : matcher.group());
-            } catch (Exception ignored) {
+            } catch (Exception _) {
+                LOGGER.warn("Failed to evaluate expression '{}'. Leaving as-is", expression);
                 evaluated = matcher.group();
             }
             matcher.appendReplacement(result, Matcher.quoteReplacement(evaluated));

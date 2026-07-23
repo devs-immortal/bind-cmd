@@ -1,5 +1,7 @@
 package net.immortaldevs.bindcmd.config;
 
+import static net.immortaldevs.bindcmd.BindCmd.LOGGER;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -30,7 +32,8 @@ public final class ConfigLoader {
             byte[] contentBytes = stream.readAllBytes();
             String content = new String(contentBytes, StandardCharsets.UTF_8);
             return decode(content);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            LOGGER.error("Failed to read config file {}. Treating as empty", file.getAbsolutePath(), e);
             return Collections.emptyList();
         }
     }
@@ -46,7 +49,8 @@ public final class ConfigLoader {
         try (FileOutputStream out = new FileOutputStream(file)) {
             out.write(encoded.getBytes(StandardCharsets.UTF_8));
             return true;
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            LOGGER.error("Failed to write config file {}", file.getAbsolutePath(), e);
             return false;
         }
     }
@@ -54,11 +58,13 @@ public final class ConfigLoader {
     private File getConfigFile(String fileName) {
         File file = new File(runDirectory, fileName);
         if (!ensureConfigDirExists()) {
+            LOGGER.warn("Could not create config directory in {}. {} unavailable", runDirectory, fileName);
             try {
                 if (!file.createNewFile()) {
                     return null;
                 }
-            } catch (IOException _) {
+            } catch (IOException e) {
+                LOGGER.warn("Failed to create config file {}", fileName, e);
             }
             return null;
         }

@@ -1,5 +1,7 @@
 package net.immortaldevs.bindcmd.config;
 
+import static net.immortaldevs.bindcmd.BindCmd.LOGGER;
+
 import net.immortaldevs.bindcmd.BindSource;
 import net.immortaldevs.bindcmd.CommandBinding;
 import net.minecraft.client.Minecraft;
@@ -26,14 +28,19 @@ public final class Config {
 
     public static void load() {
         clientBindings = fromEntries(loader.read());
-        if (clientBindings.isEmpty()) save(true);
+        LOGGER.info("Loaded {} client bindings from config", clientBindings.size());
+        if (clientBindings.isEmpty() && !save(true)) {
+            LOGGER.warn("Failed to write backup config");
+        }
         updateBindings();
     }
 
     public static void loadWorldConfig(Path path) {
         if (path == null) return;
+        
         List<ConfigEntry> data = new ConfigLoader(path.toFile()).read();
         serverBindings = fromEntries(data, BindSource.WORLD);
+        LOGGER.info("Loaded {} world bindings from {}", serverBindings.size(), path);
         updateBindings();
     }
 
@@ -49,11 +56,13 @@ public final class Config {
     }
 
     public static void setServerBindings(List<ConfigEntry> data) {
+        LOGGER.info("Applied {} server binding entries", data.size());
         serverBindings = fromEntries(data, BindSource.SERVER);
         updateBindings();
     }
 
     public static void clearServerBindings() {
+        LOGGER.debug("Cleared {} server bindings", serverBindings.size());
         serverBindings = Collections.emptyList();
         updateBindings();
     }
@@ -80,7 +89,13 @@ public final class Config {
     }
 
     public static boolean save(boolean backup) {
-        return loader.write(toEntries(clientBindings), backup);
+        boolean ok = loader.write(toEntries(clientBindings), backup);
+        if (ok) {
+            LOGGER.info("Saved {} client bindings {}", clientBindings.size(), backup ? " (backup)" : "");
+        } else {
+            LOGGER.error("Failed to save client bindings {}", backup ? " (backup)" : "");
+        }
+        return ok;
     }
 
     private static List<ConfigEntry> toEntries(List<CommandBinding> data) {

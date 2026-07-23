@@ -11,6 +11,7 @@ public final class BindCmdClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        BindCmd.LOGGER.info("Initializing BindCommands client");
         PayloadTypeRegistry.clientboundPlay().register(ConfigPayload.ID, ConfigPayload.CODEC);
         PayloadTypeRegistry.clientboundConfiguration().register(ConfigPayload.ID, ConfigPayload.CODEC);
 
@@ -26,6 +27,7 @@ public final class BindCmdClient implements ClientModInitializer {
     }
 
     private static void onPlayerJoin(Minecraft client) {
+        BindCmd.LOGGER.info("Joined world and cleared server bindings");
         Config.clearServerBindings();
         if (client.getSingleplayerServer() != null && client.getSingleplayerServer().isSingleplayer()) {
             var server = client.getSingleplayerServer();
@@ -35,6 +37,7 @@ public final class BindCmdClient implements ClientModInitializer {
     }
 
     private static void onPlayerDisconnect() {
+        BindCmd.LOGGER.info("Disconnected and cleared server bindings");
         Config.clearServerBindings();
     }
 }

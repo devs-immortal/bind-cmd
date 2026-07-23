@@ -2,6 +2,7 @@ package net.immortaldevs.bindcmd.config;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.immortaldevs.bindcmd.BindCmd;
 import net.immortaldevs.bindcmd.CommandBinding;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.components.Button;
@@ -93,6 +94,12 @@ public final class ModConfigScreen extends OptionsSubScreen {
             return true;
         }
         return super.keyPressed(input);
+    }
+
+    @Override
+    public void onClose() {
+        BindCmd.LOGGER.info("Config screen closed without saving");
+        super.onClose();
     }
 
     private void doneButtonPressed() {

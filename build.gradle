@@ -63,6 +63,7 @@ jar {
 
 loom {
     accessWidenerPath = file("src/main/resources/bindcmd.accesswidener")
+    log4jConfigs.from "log4j-dev.xml"
 }
 
 fabricApi {
