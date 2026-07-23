@@ -110,6 +110,11 @@ public class ConfigScreenGameTest implements FabricClientGameTest {
                 if (!target.getName().equals(actual)) {
                     throw new AssertionError("key is \"" + actual + "\", expected \"" + target.getName() + "\"");
                 }
+                List<String> commands = Config.getCommands(REBIND_KEY);
+                if (!commands.contains("/test-edit")) {
+                    throw new AssertionError(
+                            "commandsMap missing /test-edit for " + REBIND_KEY + " after rebind: " + commands);
+                }
             });
         } finally {
             context.runOnClient(_ -> {
@@ -157,6 +162,11 @@ public class ConfigScreenGameTest implements FabricClientGameTest {
             context.runOnClient(_ -> {
                 if (!"/after".equals(binding.commands.getFirst())) {
                     throw new AssertionError("editing the text field didn't update the command: " + binding.commands);
+                }
+                List<String> commands = Config.getCommands(binding.getTranslationKey());
+                if (!commands.contains("/after") || commands.contains("/before")) {
+                    throw new AssertionError(
+                            "commandsMap stale after text edit: " + commands);
                 }
             });
         } finally {

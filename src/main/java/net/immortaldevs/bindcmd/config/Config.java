@@ -58,6 +58,10 @@ public final class Config {
         updateBindings();
     }
 
+    public static void refresh() {
+        updateBindings();
+    }
+
     private static void updateBindings() {
         List<CommandBinding> combined = new ArrayList<>(clientBindings.size() + serverBindings.size());
         combined.addAll(clientBindings);

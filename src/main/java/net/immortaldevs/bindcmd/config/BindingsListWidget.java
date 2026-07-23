@@ -36,6 +36,7 @@ public final class BindingsListWidget extends ContainerObjectSelectionList<Bindi
 
     public void update() {
         KeyMapping.resetMapping();
+        Config.refresh();
         updateChildren();
     }
 
@@ -103,6 +104,7 @@ public final class BindingsListWidget extends ContainerObjectSelectionList<Bindi
         private void inputFieldChanged(String text) {
             if (text != null && !text.trim().isEmpty()) {
                 binding.commands.set(commandIndex, text);
+                Config.refresh();
             }
         }
 
