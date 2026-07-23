@@ -13,7 +13,10 @@ base {
 }
 
 repositories {
-    maven { url = "https://maven.terraformersmc.com/" }
+    maven {
+        name = "Terraformers"
+        url = "https://maven.terraformersmc.com/repository/maven-terraformers/"
+    }
 }
 
 dependencies {
