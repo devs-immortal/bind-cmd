@@ -17,6 +17,8 @@ import net.minecraft.client.input.MouseButtonInfo;
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.immortaldevs.bindcmd.BindCmd.LOGGER;
+
 @SuppressWarnings("UnstableApiUsage")
 public class ConfigScreenGameTest implements FabricClientGameTest {
     private static final String ADD_COMMAND_KEY = "text.bindcmd.config.add_command";
@@ -25,6 +27,7 @@ public class ConfigScreenGameTest implements FabricClientGameTest {
 
     @Override
     public void runTest(ClientGameTestContext context) {
+        LOGGER.info("gametest ConfigScreenGameTest started");
         Screen lastScreen = context.computeOnClient(client -> client.gui.screen());
         if (lastScreen == null) {
             throw new AssertionError("expected a non-null initial screen to use as the parent screen");
@@ -32,11 +35,11 @@ public class ConfigScreenGameTest implements FabricClientGameTest {
 
         List<CommandBinding> snapshot = context.computeOnClient(_ -> new ArrayList<>(Config.getBindings()));
         try {
-            testDoneButton(context, lastScreen);
-            testAddCommandButton(context, lastScreen);
-            testEditRebindFlow(context, lastScreen);
-            testDeleteButton(context, lastScreen);
-            testInputFieldEditing(context, lastScreen);
+            step("done button", () -> testDoneButton(context, lastScreen));
+            step("add command button", () -> testAddCommandButton(context, lastScreen));
+            step("edit rebind flow", () -> testEditRebindFlow(context, lastScreen));
+            step("delete button", () -> testDeleteButton(context, lastScreen));
+            step("input field editing", () -> testInputFieldEditing(context, lastScreen));
         } finally {
             context.runOnClient(client -> {
                 for (CommandBinding binding : new ArrayList<>(Config.getBindings())) {
@@ -47,6 +50,13 @@ public class ConfigScreenGameTest implements FabricClientGameTest {
                 client.gui.setScreen(lastScreen);
             });
         }
+        LOGGER.info("gametest ConfigScreenGameTest passed");
+    }
+
+    private static void step(String name, Runnable test) {
+        LOGGER.info("gametest ConfigScreenGameTest step \"{}\" started", name);
+        test.run();
+        LOGGER.info("gametest ConfigScreenGameTest step \"{}\" passed", name);
     }
 
     private static void testDoneButton(ClientGameTestContext context, Screen lastScreen) {

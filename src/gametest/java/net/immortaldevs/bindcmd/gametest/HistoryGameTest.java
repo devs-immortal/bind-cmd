@@ -4,6 +4,9 @@ import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.immortaldevs.bindcmd.Command;
+import org.jspecify.annotations.NonNull;
+
+import static net.immortaldevs.bindcmd.BindCmd.LOGGER;
 
 @SuppressWarnings("UnstableApiUsage")
 public class HistoryGameTest implements FabricClientGameTest {
@@ -12,8 +15,9 @@ public class HistoryGameTest implements FabricClientGameTest {
     private static final String HISTORY_REFERENCE = "@0";
 
     @Override
-    public void runTest(ClientGameTestContext context) {
-        try (TestSingleplayerContext _ = joinWorld(context)) {
+    public void runTest(@NonNull ClientGameTestContext context) {
+        LOGGER.info("gametest HistoryGameTest started");
+        try (var _ = joinWorld(context)) {
             assertCommand(context, HISTORY_COMMAND, Command.CmdType.COMMAND, "home");
 
             seedChatHistory(context, HISTORY_COMMAND);
@@ -22,6 +26,7 @@ public class HistoryGameTest implements FabricClientGameTest {
             seedChatHistory(context, HISTORY_MESSAGE);
             assertCommand(context, HISTORY_REFERENCE, Command.CmdType.MESSAGE, HISTORY_MESSAGE);
         }
+        LOGGER.info("gametest HistoryGameTest passed");
     }
 
     private static TestSingleplayerContext joinWorld(ClientGameTestContext context) {

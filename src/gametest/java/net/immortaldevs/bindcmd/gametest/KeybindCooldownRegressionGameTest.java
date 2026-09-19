@@ -8,8 +8,11 @@ import net.immortaldevs.bindcmd.BindSource;
 import net.immortaldevs.bindcmd.CommandBinding;
 import net.immortaldevs.bindcmd.config.Config;
 import net.minecraft.world.level.GameType;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+
+import static net.immortaldevs.bindcmd.BindCmd.LOGGER;
 
 @SuppressWarnings("UnstableApiUsage")
 public class KeybindCooldownRegressionGameTest implements FabricClientGameTest {
@@ -17,7 +20,8 @@ public class KeybindCooldownRegressionGameTest implements FabricClientGameTest {
     private static final String UNBOUND_KEY = "key.keyboard.g";
 
     @Override
-    public void runTest(ClientGameTestContext context) {
+    public void runTest(@NonNull ClientGameTestContext context) {
+        LOGGER.info("gametest KeybindCooldownRegressionGameTest started");
         try (TestSingleplayerContext singleplayer = joinWorldWithCheatsEnabled(context)) {
             CommandBinding gamemodeBinding = bindKey(context, GAMEMODE_COMMAND_KEY, "/gamemode creative");
 
@@ -33,6 +37,7 @@ public class KeybindCooldownRegressionGameTest implements FabricClientGameTest {
                 removeBindings(context, gamemodeBinding);
             }
         }
+        LOGGER.info("gametest KeybindCooldownRegressionGameTest passed");
     }
 
     private static TestSingleplayerContext joinWorldWithCheatsEnabled(ClientGameTestContext context) {

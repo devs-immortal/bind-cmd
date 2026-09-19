@@ -6,10 +6,13 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
 import net.immortaldevs.bindcmd.Command;
 import net.minecraft.client.player.LocalPlayer;
 
+import static net.immortaldevs.bindcmd.BindCmd.LOGGER;
+
 @SuppressWarnings("UnstableApiUsage")
 public class CommandGameTest implements FabricClientGameTest {
     @Override
     public void runTest(ClientGameTestContext context) {
+        LOGGER.info("gametest CommandGameTest started");
         try (TestSingleplayerContext singleplayer = context.worldBuilder().create()) {
             singleplayer.getConnection().waitForChunksRender();
             context.waitFor(client -> client.player != null);
@@ -34,6 +37,7 @@ public class CommandGameTest implements FabricClientGameTest {
                 assertCommand("${max(3, 9)}", "9");
             });
         }
+        LOGGER.info("gametest CommandGameTest passed");
     }
 
     private static void assertCommand(String input, String expected) {

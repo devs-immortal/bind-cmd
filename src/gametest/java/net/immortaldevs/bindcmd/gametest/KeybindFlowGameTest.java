@@ -9,9 +9,12 @@ import net.immortaldevs.bindcmd.BindSource;
 import net.immortaldevs.bindcmd.CommandBinding;
 import net.immortaldevs.bindcmd.config.Config;
 import net.minecraft.world.level.GameType;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static net.immortaldevs.bindcmd.BindCmd.LOGGER;
 
 @SuppressWarnings("UnstableApiUsage")
 public class KeybindFlowGameTest implements FabricClientGameTest {
@@ -20,7 +23,8 @@ public class KeybindFlowGameTest implements FabricClientGameTest {
     private static final String CHAT_MESSAGE = "hello from bindcmd";
 
     @Override
-    public void runTest(ClientGameTestContext context) {
+    public void runTest(@NonNull ClientGameTestContext context) {
+        LOGGER.info("gametest KeybindFlowGameTest started");
         try (TestSingleplayerContext singleplayer = joinWorldWithCheatsEnabled(context)) {
             ServerChatWatcher chatWatcher = ServerChatWatcher.attach();
 
@@ -40,6 +44,7 @@ public class KeybindFlowGameTest implements FabricClientGameTest {
                 removeBindings(context, gamemodeBinding, messageBinding);
             }
         }
+        LOGGER.info("gametest KeybindFlowGameTest passed");
     }
 
     private static TestSingleplayerContext joinWorldWithCheatsEnabled(ClientGameTestContext context) {
