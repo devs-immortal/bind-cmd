@@ -11,7 +11,7 @@ public class CommandGameTest implements FabricClientGameTest {
     @Override
     public void runTest(ClientGameTestContext context) {
         try (TestSingleplayerContext singleplayer = context.worldBuilder().create()) {
-            singleplayer.getClientLevel().waitForChunksRender();
+            singleplayer.getConnection().waitForChunksRender();
             context.waitFor(client -> client.player != null);
 
             double y = context.computeOnClient(client -> client.player.getY());

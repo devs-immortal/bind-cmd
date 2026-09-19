@@ -32,7 +32,7 @@ public class CommandBinding {
         this.source = source;
         InputConstants.Key keyFromTranslation = InputConstants.getKey(translationKey);
         int keyCode = keyFromTranslation.getValue();
-        InputConstants.Type type = translationKey.startsWith("key.mouse") ? InputConstants.Type.MOUSE : InputConstants.Type.KEYSYM;
+        InputConstants.Type type = translationKey.startsWith("key.mouse") ? InputConstants.Type.MOUSE : InputConstants.Type.KEYBOARD;
         this.key = new KeyMapping(translationKey, type, keyCode, CATEGORY);
     }
 

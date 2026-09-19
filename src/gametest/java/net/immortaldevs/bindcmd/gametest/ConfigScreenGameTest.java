@@ -13,7 +13,6 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonInfo;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -217,6 +216,6 @@ public class ConfigScreenGameTest implements FabricClientGameTest {
     }
 
     private static void pressButton(Button button) {
-        button.onPress(new MouseButtonInfo(GLFW.GLFW_KEY_UNKNOWN, 0));
+        button.onPress(new MouseButtonInfo(InputConstants.UNKNOWN.getValue(), 0));
     }
 }

@@ -15,7 +15,7 @@ base {
 repositories {
     maven {
         name = "Terraformers"
-        url = "https://maven.terraformersmc.com/repository/maven-terraformers/"
+        url = "https://maven.terraformersmc.com/"
     }
 }
 

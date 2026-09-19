@@ -26,7 +26,7 @@ public class HistoryGameTest implements FabricClientGameTest {
 
     private static TestSingleplayerContext joinWorld(ClientGameTestContext context) {
         TestSingleplayerContext singleplayer = context.worldBuilder().create();
-        singleplayer.getClientLevel().waitForChunksRender();
+        singleplayer.getConnection().waitForChunksRender();
         context.waitFor(client -> client.player != null);
         return singleplayer;
     }

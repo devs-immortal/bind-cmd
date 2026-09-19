@@ -39,7 +39,7 @@ public class KeybindCooldownRegressionGameTest implements FabricClientGameTest {
         TestSingleplayerContext singleplayer = context.worldBuilder()
                 .adjustSettings(settings -> settings.setAllowCommands(true))
                 .create();
-        singleplayer.getClientLevel().waitForChunksRender();
+        singleplayer.getConnection().waitForChunksRender();
         context.waitFor(client -> client.player != null);
         return singleplayer;
     }
